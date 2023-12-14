@@ -19,15 +19,15 @@ class PREquality(ABC):
     left: PRFunction
     right: PRFunction
 
-class PREqualityAxiom(PREquality):
-    def __init__(self, left: PRFunction, right: PRFunction):
-        self.left = left
-        self.right = right
-    
-    def __repr__(self):
-        return f'PREqualityAxiom({repr(self.left)}, {repr(self.right)})'
+#class PREqualityAxiom(PREquality):
+#    def __init__(self, left: PRFunction, right: PRFunction):
+#        self.left = left
+#        self.right = right
+#    
+#    def __repr__(self):
+#        return f'PREqualityAxiom({repr(self.left)}, {repr(self.right)})'
 
-class PREqualByExhaustion(PREquality):
+class ByCases(PREquality):
     domain: EnumMeta
     left: PRFunction
     right: PRFunction
@@ -46,4 +46,4 @@ class PREqualByExhaustion(PREquality):
             assert self.left(value) == self.right(value)
 
     def __repr__(self):
-        return f'PREqualByExhaustion({repr(self.left)}, {repr(self.right)})'
+        return f'ByCases({repr(self.left)}, {repr(self.right)})'

@@ -23,28 +23,28 @@ class PRFunction(ABC):
     def __call__(self, *args, **kwargs):
         pass
 
-class PrimitivePRFunction(PRFunction):
-    def __init__(self, domain, func):
-        self._domain = domain
-        self.func = func
+#class PrimitivePRFunction(PRFunction):
+#    def __init__(self, domain, func):
+#        self._domain = domain
+#        self.func = func
+#
+#    @property
+#    def domain(self) -> PRType:
+#        return self._domain
+#
+#    def __call__(self, *args, **kwargs):
+#        return self.func(*args, **kwargs)
+#
+#    def __repr__(self):
+#        return f'PrimitivePRFunction({repr(self.func)})'
 
-    @property
-    def domain(self) -> PRType:
-        return self._domain
+#def primitive(domain: PRType):
+#    def decorator(func):
+#        return PrimitivePRFunction(domain, func)
+#
+#    return decorator
 
-    def __call__(self, *args, **kwargs):
-        return self.func(*args, **kwargs)
-
-    def __repr__(self):
-        return f'PrimitivePRFunction({repr(self.func)})'
-
-def primitive(domain: PRType):
-    def decorator(func):
-        return PrimitivePRFunction(domain, func)
-
-    return decorator
-
-class ComposedPRFunction(PRFunction):
+class Compose(PRFunction):
     parts: tuple[PRFunction]
 
     def __init__(self, *parts):
@@ -63,9 +63,9 @@ class ComposedPRFunction(PRFunction):
         return result
 
     def __repr__(self):
-        return f"ComposedPRFunction({', '.join(repr(part) for part in self.parts)})"
+        return f"Compose({', '.join(repr(part) for part in self.parts)})"
 
-class PRIdentity(PRFunction):
+class Identity(PRFunction):
     _domain: PRType
 
     def __init__(self, domain: PRType):
@@ -79,9 +79,9 @@ class PRIdentity(PRFunction):
         return x
 
     def __repr__(self):
-        return f'PRIdentity({self.domain})'
+        return f'Identity({self.domain})'
 
-class PRConstFunction(PRFunction):
+class Const(PRFunction):
     _domain: PRType
     value: object
 
@@ -97,9 +97,9 @@ class PRConstFunction(PRFunction):
         return self.value
 
     def __repr__(self):
-        return f'PRConst({self.domain}, {self.value})'
+        return f'Const({self.domain}, {self.value})'
 
-class EnumMatchFunction(PRFunction):
+class MatchEnum(PRFunction):
     # note that the domain must be an enumerated type (instance of EnumMeta),
     # not a value of an enumerated type (instance of Enum)
     domain: EnumMeta
@@ -120,4 +120,4 @@ class EnumMatchFunction(PRFunction):
         return self.values[x]
 
     def __repr__(self):
-        return f'EnumMatchFunction({self.domain}, {self.codomain}, {self.values})'
+        return f'MatchEnum({self.domain}, {self.codomain}, {self.values})'

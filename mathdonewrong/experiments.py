@@ -10,21 +10,6 @@
 
 from enum import Enum
 
-from mathdonewrong.functions import ComposedPRFunction, primitive
-from mathdonewrong.proofs import PREqualityAxiom
-
-@primitive(bool)
-def id_(x: bool) -> bool:
-    return x
-
-@primitive(bool)
-def not_(x: bool) -> bool:
-    return not x
-
-not_not = ComposedPRFunction(not_, not_)
-
-not_not_is_id = PREqualityAxiom(not_not, id_)
-
 class MyBool(Enum):
     MyFalse = 0
     MyTrue = 1

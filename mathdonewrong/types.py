@@ -10,6 +10,5 @@
 
 from abc import ABC
 
-
 class PRType(ABC):
     pass
