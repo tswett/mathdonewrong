@@ -10,34 +10,32 @@
 
 import pytest
 
-from mathdonewrong.experiments import MyBool
 from mathdonewrong.functions import Compose, MatchEnum, Const, Identity
 from mathdonewrong.proofs import ByCases
 
-MyFalse, MyTrue = MyBool.MyFalse, MyBool.MyTrue
-match_not = MatchEnum(MyBool, MyBool, {MyFalse: MyTrue, MyTrue: MyFalse})
+match_not = MatchEnum(bool, bool, {False: True, True: False})
 
 def test_MatchEnum():
-    assert match_not(MyFalse) == MyTrue
-    assert match_not(MyTrue) == MyFalse
+    assert match_not(False) == True
+    assert match_not(True) == False
 
 not_not = Compose(match_not, match_not)
 
 def test_not_not():
-    assert not_not(MyFalse) == MyFalse
-    assert not_not(MyTrue) == MyTrue
+    assert not_not(False) == False
+    assert not_not(True) == True
 
-bool_id = Identity(MyBool)
+bool_id = Identity(bool)
 
 def test_bool_id():
-    assert bool_id(MyFalse) == MyFalse
-    assert bool_id(MyTrue) == MyTrue
+    assert bool_id(False) == False
+    assert bool_id(True) == True
 
-const_false = Const(MyBool, MyFalse)
+const_false = Const(bool, False)
 
 def test_const_false():
-    assert const_false(MyFalse) == MyFalse
-    assert const_false(MyTrue) == MyFalse
+    assert const_false(False) == False
+    assert const_false(True) == False
 
 def test_ByCases_success():
     ByCases(not_not, bool_id)

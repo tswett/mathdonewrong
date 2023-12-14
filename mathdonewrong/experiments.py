@@ -8,8 +8,4 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
-from enum import Enum
-
-class MyBool(Enum):
-    MyFalse = 0
-    MyTrue = 1
+pass

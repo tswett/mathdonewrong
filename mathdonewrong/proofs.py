@@ -12,6 +12,7 @@ from abc import ABC
 from enum import EnumMeta
 
 from mathdonewrong.functions import PRFunction
+from mathdonewrong.types import PRType
 
 class PREquality(ABC):
     """Conceptually, a PREquality is a proof in primitive recursive arithmetic that two PRFunctions are identical."""
@@ -19,16 +20,8 @@ class PREquality(ABC):
     left: PRFunction
     right: PRFunction
 
-#class PREqualityAxiom(PREquality):
-#    def __init__(self, left: PRFunction, right: PRFunction):
-#        self.left = left
-#        self.right = right
-#    
-#    def __repr__(self):
-#        return f'PREqualityAxiom({repr(self.left)}, {repr(self.right)})'
-
 class ByCases(PREquality):
-    domain: EnumMeta
+    domain: PRType
     left: PRFunction
     right: PRFunction
 
@@ -38,6 +31,8 @@ class ByCases(PREquality):
         self.domain = left.domain
         self.left = left
         self.right = right
+
+        assert isinstance(self.domain, PRType)
 
         self._check()
 
