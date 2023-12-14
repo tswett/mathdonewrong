@@ -10,7 +10,9 @@
 
 import pytest
 
-from experiments import ComposedPRFunction, EnumMatchFunction, MyBool, PRConstFunction, PREqualByExhaustion, PRIdentity, not_not
+from mathdonewrong.experiments import MyBool
+from mathdonewrong.functions import ComposedPRFunction, EnumMatchFunction, PRConstFunction, PRIdentity
+from mathdonewrong.proofs import PREqualByExhaustion
 
 MyFalse, MyTrue = MyBool.MyFalse, MyBool.MyTrue
 match_not = EnumMatchFunction(MyBool, MyBool, {MyFalse: MyTrue, MyTrue: MyFalse})
