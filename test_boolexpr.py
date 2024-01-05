@@ -39,6 +39,21 @@ def test_and_str_and_repr():
     assert repr(And(T, F)) == 'And(Const(True), Const(False))'
     assert repr(And(F, F)) == 'And(Const(False), Const(False))'
 
-#def test_nested_and_str():
-#    assert str(And(And(T, T), T)) == 'True & True & True'
-#    assert str(And(T, And(T, T))) == 'True & (True & True)'
+def test_nested_and_str():
+    assert str(And(And(T, T),
+                   T)) == 'True & True & True'
+
+    assert str(And(T,
+                   And(T, T))) == 'True & (True & True)'
+
+    assert str(And(T,
+                   And(T,
+                       And(T, T)))) == 'True & (True & (True & True))'
+
+    assert str(And(And(T,
+                       And(T, T)),
+                   T)) == 'True & (True & True) & True'
+
+def test_and_emits_at_precedence_60():
+    assert f'{And(T, T):60}' == 'True & True'
+    assert f'{And(T, T):61}' == '(True & True)'
