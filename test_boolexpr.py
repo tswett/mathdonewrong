@@ -8,13 +8,9 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
-from mathdonewrong.boolexpr import And, Const
+from mathdonewrong.boolexpr import And, Const, Or
 
 T, F = Const(True), Const(False)
-
-def test_can_create_constant_boolexpr():
-    Const(True)
-    Const(False)
 
 def test_const_str_and_repr():
     assert str(T) == 'True'
@@ -24,11 +20,8 @@ def test_const_str_and_repr():
     assert repr(F) == 'Const(False)'
 
 def test_can_evaluate_const():
-    assert Const(True).evaluate() == True
-    assert Const(False).evaluate() == False
-
-def test_can_create_and_expression():
-    And(Const(True), Const(False))
+    assert T.evaluate() == True
+    assert F.evaluate() == False
 
 def test_and_str_and_repr():
     assert str(And(T, T)) == 'True & True'
@@ -39,21 +32,58 @@ def test_and_str_and_repr():
     assert repr(And(T, F)) == 'And(Const(True), Const(False))'
     assert repr(And(F, F)) == 'And(Const(False), Const(False))'
 
+def test_shortcuts_for_and():
+    assert T & T == And(T, T)
+    assert T & F == And(T, F)
+    assert F & F == And(F, F)
+
 def test_nested_and_str():
-    assert str(And(And(T, T),
-                   T)) == 'True & True & True'
+    assert str((T & T) & T) == 'True & True & True'
 
-    assert str(And(T,
-                   And(T, T))) == 'True & (True & True)'
+    assert str(T & (T & T)) == 'True & (True & True)'
 
-    assert str(And(T,
-                   And(T,
-                       And(T, T)))) == 'True & (True & (True & True))'
+    assert str(T & (T & (T & T))) == 'True & (True & (True & True))'
 
-    assert str(And(And(T,
-                       And(T, T)),
-                   T)) == 'True & (True & True) & True'
+    assert str((T & (T & T)) & T) == 'True & (True & True) & True'
 
-def test_and_emits_at_precedence_60():
-    assert f'{And(T, T):60}' == 'True & True'
-    assert f'{And(T, T):61}' == '(True & True)'
+def test_and_evaluate():
+    assert (T & T).evaluate() == True
+    assert (T & F).evaluate() == False
+    assert (F & T).evaluate() == False
+    assert (F & F).evaluate() == False
+
+def test_or_str_and_repr():
+    assert str(Or(T, T)) == 'True | True'
+    assert str(Or(T, F)) == 'True | False'
+    assert str(Or(F, F)) == 'False | False'
+
+    assert repr(Or(T, T)) == 'Or(Const(True), Const(True))'
+    assert repr(Or(T, F)) == 'Or(Const(True), Const(False))'
+    assert repr(Or(F, F)) == 'Or(Const(False), Const(False))'
+
+def test_shortcuts_for_or():
+    assert T | T == Or(T, T)
+    assert T | F == Or(T, F)
+    assert F | F == Or(F, F)
+
+def test_nested_or_str():
+    assert str((T | T) | T) == 'True | True | True'
+
+    assert str(T | (T | T)) == 'True | (True | True)'
+
+    assert str(T | (T | (T | T))) == 'True | (True | (True | True))'
+
+    assert str((T | (T | T)) | T) == 'True | (True | True) | True'
+
+def test_and_binds_more_tightly_than_or():
+    assert str((T & T) | T) == 'True & True | True'
+    assert str(T & (T | T)) == 'True & (True | True)'
+
+    assert str(T | (T & T)) == 'True | True & True'
+    assert str((T | T) & T) == '(True | True) & True'
+
+def test_or_evaluate():
+    assert (T | T).evaluate() == True
+    assert (T | F).evaluate() == True
+    assert (F | T).evaluate() == True
+    assert (F | F).evaluate() == False
