@@ -8,7 +8,7 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
-from mathdonewrong.boolexpr import And, Const, Or
+from mathdonewrong.boolexpr import And, Const, Not, Or
 
 T, F = Const(True), Const(False)
 
@@ -23,6 +23,8 @@ def test_can_evaluate_const():
     assert T.evaluate() == True
     assert F.evaluate() == False
 
+
+
 def test_and_str_and_repr():
     assert str(And(T, T)) == 'True & True'
     assert str(And(T, F)) == 'True & False'
@@ -32,7 +34,7 @@ def test_and_str_and_repr():
     assert repr(And(T, F)) == 'And(Const(True), Const(False))'
     assert repr(And(F, F)) == 'And(Const(False), Const(False))'
 
-def test_shortcuts_for_and():
+def test_shortcut_for_and():
     assert T & T == And(T, T)
     assert T & F == And(T, F)
     assert F & F == And(F, F)
@@ -52,6 +54,8 @@ def test_and_evaluate():
     assert (F & T).evaluate() == False
     assert (F & F).evaluate() == False
 
+
+
 def test_or_str_and_repr():
     assert str(Or(T, T)) == 'True | True'
     assert str(Or(T, F)) == 'True | False'
@@ -61,7 +65,7 @@ def test_or_str_and_repr():
     assert repr(Or(T, F)) == 'Or(Const(True), Const(False))'
     assert repr(Or(F, F)) == 'Or(Const(False), Const(False))'
 
-def test_shortcuts_for_or():
+def test_shortcut_for_or():
     assert T | T == Or(T, T)
     assert T | F == Or(T, F)
     assert F | F == Or(F, F)
@@ -87,3 +91,31 @@ def test_or_evaluate():
     assert (T | F).evaluate() == True
     assert (F | T).evaluate() == True
     assert (F | F).evaluate() == False
+
+
+
+def test_not_str_and_repr():
+    assert str(Not(T)) == '~True'
+    assert str(Not(F)) == '~False'
+
+    assert repr(Not(T)) == 'Not(Const(True))'
+    assert repr(Not(F)) == 'Not(Const(False))'
+
+def test_shortcut_for_not():
+    assert ~T == Not(T)
+    assert ~F == Not(F)
+
+def test_nested_not_str():
+    assert str(~(~T)) == '~~True'
+
+def test_not_binds_more_tightly_than_and():
+    assert str((~T) & T) == '~True & True'
+    assert str(~(T & T)) == '~(True & True)'
+
+def test_not_emits_at_precedence_80():
+    assert f'{~T:80}' == '~True'
+    assert f'{~T:81}' == '(~True)'
+
+def test_not_evaluate():
+    assert (~T).evaluate() == False
+    assert (~F).evaluate() == True

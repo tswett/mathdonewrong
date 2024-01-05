@@ -16,6 +16,17 @@ class BoolExpr:
         return self.__format__('')
 
     def __format__(self, format_spec: str):
+        """Format using the specified precedence
+
+        Format this boolean expression using the specified precedence limit,
+        specified as a string containing an integer.
+
+        The precedence limit is the maximum precedence of any operator that can
+        appear in the output outside of parentheses. If the precedence of any
+        operator in the expression is greater than the specified limit, then the
+        expression will be parenthesized.
+        """
+
         raise NotImplementedError
 
     def __and__(self, other: BoolExpr) -> BoolExpr:
@@ -23,6 +34,9 @@ class BoolExpr:
 
     def __or__(self, other: BoolExpr) -> BoolExpr:
         return Or(self, other)
+
+    def __invert__(self) -> BoolExpr:
+        return Not(self)
 
     def evaluate(self) -> bool:
         raise NotImplementedError
@@ -83,3 +97,24 @@ class Or(BoolExpr):
 
     def evaluate(self) -> bool:
         return self.left.evaluate() or self.right.evaluate()
+
+@dataclass
+class Not(BoolExpr):
+    operand: BoolExpr
+
+    def __repr__(self):
+        return f'Not({self.operand!r})'
+
+    def __format__(self, format_spec: str):
+        if format_spec == '':
+            precedence = 0
+        else:
+            precedence = int(format_spec)
+
+        if precedence <= 80:
+            return f'~{self.operand:80}'
+        else:
+            return f'(~{self.operand:80})'
+
+    def evaluate(self) -> bool:
+        return not self.operand.evaluate()
