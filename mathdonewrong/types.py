@@ -10,24 +10,30 @@
 
 type_to_prtype_dict = {}
 
-def prtype_for(t: type):
-    def decorator(cls):
-        type_to_prtype_dict[t] = cls
-        return cls
-    return decorator
-
 class PRType(type):
-    pass
+    """A primitive recursive type
 
-class Enum(PRType):
-    values: list
+    A PRType represents a "primitive recursive type". Conceptually, a primitive
+    recursive type is a type where membership is decidable by a primitive
+    recursive function.
 
-    def __iter__(cls):
-        return iter(cls.values)
+    Some PRTypes are intended as representations of built-in Python types. This
+    produces the rather ugly situation that these PRTypes are Python types, but
+    aren't actually intended to be used as Python types.
+    """
 
-@prtype_for(bool)
-class Bool(metaclass=Enum):
-    values = [False, True]
+    underlying: type
+
+    def __new__(cls, name, bases, namespace, *, underlying=None):
+        result = super().__new__(cls, name, bases, namespace)
+
+        if underlying is None:
+            result.underlying = result
+        else:
+            result.underlying = underlying
+            type_to_prtype_dict[underlying] = result
+
+        return result
 
 def to_prtype(t: object) -> PRType:
     if isinstance(t, PRType):
@@ -36,3 +42,16 @@ def to_prtype(t: object) -> PRType:
         return type_to_prtype_dict[t]
     else:
         raise ValueError(f"Couldn't find a PRType for {t}")
+
+
+
+class Enum(PRType):
+    values: list
+
+    def __iter__(cls):
+        return iter(cls.values)
+
+
+
+class Bool(metaclass=Enum, underlying=bool):
+    values = [False, True]
