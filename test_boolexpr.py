@@ -1,4 +1,4 @@
-# Copyright 2023 Tanner Swett.
+# Copyright 2024 Tanner Swett.
 #
 # This file is part of mathdonewrong. mathdonewrong is free software: you can
 # redistribute it and/or modify it under the terms of version 3 of the GNU GPL
