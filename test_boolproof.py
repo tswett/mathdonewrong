@@ -9,8 +9,8 @@
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
 import pytest
-from mathdonewrong.boolexpr import Var
-from mathdonewrong.boolproof import ComposedProof, OrAssociativity, OrCommutativity
+from mathdonewrong.boolexpr import BoolExpr, Var
+from mathdonewrong.boolproof import BoolProofDestructor, ComposedProof, OrAssociativity, OrCommutativity
 
 def test_or_commutativity():
     a, b = Var('a'), Var('b')
@@ -47,3 +47,25 @@ def test_cannot_compose_proofs_with_mismatched_lhs_and_rhs():
 
     with pytest.raises(ValueError):
         ComposedProof(proof1, proof2)
+
+class TestBoolProofDestructor(BoolProofDestructor):
+    def or_associativity(self, a: BoolExpr, b: BoolExpr) -> None:
+        pass
+
+    def or_commutativity(self, a: BoolExpr, b: BoolExpr) -> None:
+        pass
+
+    def composed_proof(self, proof1: None, proof2: None) -> None:
+        pass
+
+def test_can_destruct_complex_proof():
+    a, b, c = Var('a'), Var('b'), Var('c')
+
+    proof1 = OrAssociativity(a, b, c)
+    proof2 = OrCommutativity(a | b, c)
+
+    proof = ComposedProof(proof1, proof2)
+
+    destructor = TestBoolProofDestructor()
+
+    proof.destruct(destructor)
