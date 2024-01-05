@@ -10,6 +10,7 @@
 
 from __future__ import annotations
 from dataclasses import dataclass
+from typing import Optional
 
 class BoolExpr:
     def __str__(self):
@@ -46,7 +47,15 @@ class BoolExpr:
     def __invert__(self) -> BoolExpr:
         return Not(self)
 
-    def evaluate(self) -> bool:
+    @property
+    def precedence(self) -> int:
+        raise NotImplementedError
+
+    def evaluate(self, context: Optional[dict[str, bool]] = None) -> bool:
+        context = context or {}
+        return self.evaluate_in(context)
+
+    def evaluate_in(self, context: dict[str, bool]) -> bool:
         raise NotImplementedError
 
 @dataclass
@@ -61,7 +70,7 @@ class Const(BoolExpr):
     def __repr__(self):
         return f'Const({self.value})'
 
-    def evaluate(self) -> bool:
+    def evaluate_in(self, context: dict[str, bool]) -> bool:
         return self.value
 
 @dataclass
@@ -77,8 +86,8 @@ class And(BoolExpr):
     def __repr__(self):
         return f'And({self.left!r}, {self.right!r})'
 
-    def evaluate(self) -> bool:
-        return self.left.evaluate() and self.right.evaluate()
+    def evaluate_in(self, context: dict[str, bool]) -> bool:
+        return self.left.evaluate_in(context) and self.right.evaluate_in(context)
 
 @dataclass
 class Or(BoolExpr):
@@ -93,8 +102,8 @@ class Or(BoolExpr):
     def __repr__(self):
         return f'Or({self.left!r}, {self.right!r})'
 
-    def evaluate(self) -> bool:
-        return self.left.evaluate() or self.right.evaluate()
+    def evaluate_in(self, context: dict[str, bool]) -> bool:
+        return self.left.evaluate_in(context) or self.right.evaluate_in(context)
 
 @dataclass
 class Not(BoolExpr):
@@ -108,5 +117,20 @@ class Not(BoolExpr):
     def __repr__(self):
         return f'Not({self.operand!r})'
 
-    def evaluate(self) -> bool:
-        return not self.operand.evaluate()
+    def evaluate_in(self, context: dict[str, bool]) -> bool:
+        return not self.operand.evaluate_in(context)
+
+@dataclass
+class Var(BoolExpr):
+    name: str
+
+    precedence = 100
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return f'Var({self.name!r})'
+
+    def evaluate_in(self, context: dict[str, bool]) -> bool:
+        return context[self.name]

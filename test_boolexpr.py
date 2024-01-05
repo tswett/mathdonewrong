@@ -8,7 +8,7 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
-from mathdonewrong.boolexpr import And, Const, Not, Or
+from mathdonewrong.boolexpr import And, Const, Not, Or, Var
 
 T, F = Const(True), Const(False)
 
@@ -119,3 +119,33 @@ def test_not_emits_at_precedence_80():
 def test_not_evaluate():
     assert (~T).evaluate() == False
     assert (~F).evaluate() == True
+
+
+
+def test_var_str_and_repr():
+    assert str(Var('x')) == 'x'
+    assert str(Var('y')) == 'y'
+
+    assert repr(Var('x')) == "Var('x')"
+    assert repr(Var('y')) == "Var('y')"
+
+def test_nested_var_str():
+    assert str(Var('x') & Var('y')) == 'x & y'
+
+def test_var_evaluate():
+    x, y = Var('x'), Var('y')
+
+    assert x.evaluate({'x': True, 'y': False}) == True
+    assert x.evaluate({'x': False, 'y': True}) == False
+    assert y.evaluate({'x': True, 'y': False}) == False
+    assert y.evaluate({'x': False, 'y': True}) == True
+
+def test_complex_evaluate():
+    x, y = Var('x'), Var('y')
+
+    expr = (x & ~y) | (~x & y)
+
+    assert expr.evaluate({'x': True, 'y': True}) == False
+    assert expr.evaluate({'x': True, 'y': False}) == True
+    assert expr.evaluate({'x': False, 'y': True}) == True
+    assert expr.evaluate({'x': False, 'y': False}) == False
