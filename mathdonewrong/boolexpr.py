@@ -13,7 +13,7 @@ from dataclasses import dataclass
 
 class BoolExpr:
     def __str__(self):
-        return self.__format__('')
+        raise NotImplementedError
 
     def __format__(self, format_spec: str):
         """Format using the specified precedence
@@ -21,13 +21,21 @@ class BoolExpr:
         Format this boolean expression using the specified precedence limit,
         specified as a string containing an integer.
 
-        The precedence limit is the maximum precedence of any operator that can
-        appear in the output outside of parentheses. If the precedence of any
-        operator in the expression is greater than the specified limit, then the
-        expression will be parenthesized.
+        The precedence limit is the minimum (loosest) precedence of any operator
+        that can appear in the output outside of parentheses. If the expression
+        contains an operator that binds more loosely than the limit, then
+        parentheses will be added around it in at least one place.
         """
 
-        raise NotImplementedError
+        if format_spec == '':
+            precedence = 0
+        else:
+            precedence = int(format_spec)
+
+        if precedence <= self.precedence:
+            return str(self)
+        else:
+            return f'({str(self)})'
 
     def __and__(self, other: BoolExpr) -> BoolExpr:
         return And(self, other)
@@ -45,11 +53,13 @@ class BoolExpr:
 class Const(BoolExpr):
     value: bool
 
+    precedence = 100
+
+    def __str__(self):
+        return str(self.value)
+
     def __repr__(self):
         return f'Const({self.value})'
-
-    def __format__(self, format_spec: str):
-        return str(self.value)
 
     def evaluate(self) -> bool:
         return self.value
@@ -59,19 +69,13 @@ class And(BoolExpr):
     left: BoolExpr
     right: BoolExpr
 
+    precedence = 60
+
+    def __str__(self):
+        return f'{self.left:60} & {self.right:61}'
+
     def __repr__(self):
         return f'And({self.left!r}, {self.right!r})'
-
-    def __format__(self, format_spec: str):
-        if format_spec == '':
-            precedence = 0
-        else:
-            precedence = int(format_spec)
-
-        if precedence <= 60:
-            return f'{self.left:60} & {self.right:61}'
-        else:
-            return f'({self.left:60} & {self.right:61})'
 
     def evaluate(self) -> bool:
         return self.left.evaluate() and self.right.evaluate()
@@ -81,19 +85,13 @@ class Or(BoolExpr):
     left: BoolExpr
     right: BoolExpr
 
+    precedence = 50
+
+    def __str__(self):
+        return f'{self.left:50} | {self.right:51}'
+
     def __repr__(self):
         return f'Or({self.left!r}, {self.right!r})'
-
-    def __format__(self, format_spec: str):
-        if format_spec == '':
-            precedence = 0
-        else:
-            precedence = int(format_spec)
-
-        if precedence <= 50:
-            return f'{self.left:50} | {self.right:51}'
-        else:
-            return f'({self.left:50} | {self.right:51})'
 
     def evaluate(self) -> bool:
         return self.left.evaluate() or self.right.evaluate()
@@ -102,19 +100,13 @@ class Or(BoolExpr):
 class Not(BoolExpr):
     operand: BoolExpr
 
+    precedence = 80
+
+    def __str__(self):
+        return f'~{self.operand:80}'
+
     def __repr__(self):
         return f'Not({self.operand!r})'
-
-    def __format__(self, format_spec: str):
-        if format_spec == '':
-            precedence = 0
-        else:
-            precedence = int(format_spec)
-
-        if precedence <= 80:
-            return f'~{self.operand:80}'
-        else:
-            return f'(~{self.operand:80})'
 
     def evaluate(self) -> bool:
         return not self.operand.evaluate()
