@@ -8,9 +8,7 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
-from mathdonewrong.boolexpr import And, Const, Not, Or, Var
-
-T, F = Const(True), Const(False)
+from mathdonewrong.boolexpr import And, F, Not, Or, T, Var
 
 def test_const_str_and_repr():
     assert str(T) == 'True'
@@ -25,7 +23,7 @@ def test_can_evaluate_const():
 
 
 
-def test_and_str_and_repr():
+def test_AND_str_and_repr():
     assert str(And(T, T)) == 'True & True'
     assert str(And(T, F)) == 'True & False'
     assert str(And(F, F)) == 'False & False'
@@ -34,12 +32,12 @@ def test_and_str_and_repr():
     assert repr(And(T, F)) == 'And(Const(True), Const(False))'
     assert repr(And(F, F)) == 'And(Const(False), Const(False))'
 
-def test_shortcut_for_and():
+def test_shortcut_for_AND():
     assert T & T == And(T, T)
     assert T & F == And(T, F)
     assert F & F == And(F, F)
 
-def test_nested_and_str():
+def test_nested_AND_str():
     assert str((T & T) & T) == 'True & True & True'
 
     assert str(T & (T & T)) == 'True & (True & True)'
@@ -48,7 +46,7 @@ def test_nested_and_str():
 
     assert str((T & (T & T)) & T) == 'True & (True & True) & True'
 
-def test_and_evaluate():
+def test_AND_evaluate():
     assert (T & T).evaluate() == True
     assert (T & F).evaluate() == False
     assert (F & T).evaluate() == False
@@ -56,7 +54,7 @@ def test_and_evaluate():
 
 
 
-def test_or_str_and_repr():
+def test_OR_str_and_repr():
     assert str(Or(T, T)) == 'True | True'
     assert str(Or(T, F)) == 'True | False'
     assert str(Or(F, F)) == 'False | False'
@@ -65,12 +63,12 @@ def test_or_str_and_repr():
     assert repr(Or(T, F)) == 'Or(Const(True), Const(False))'
     assert repr(Or(F, F)) == 'Or(Const(False), Const(False))'
 
-def test_shortcut_for_or():
+def test_shortcut_for_OR():
     assert T | T == Or(T, T)
     assert T | F == Or(T, F)
     assert F | F == Or(F, F)
 
-def test_nested_or_str():
+def test_nested_OR_str():
     assert str((T | T) | T) == 'True | True | True'
 
     assert str(T | (T | T)) == 'True | (True | True)'
@@ -79,14 +77,14 @@ def test_nested_or_str():
 
     assert str((T | (T | T)) | T) == 'True | (True | True) | True'
 
-def test_and_binds_more_tightly_than_or():
+def test_AND_binds_more_tightly_than_OR():
     assert str((T & T) | T) == 'True & True | True'
     assert str(T & (T | T)) == 'True & (True | True)'
 
     assert str(T | (T & T)) == 'True | True & True'
     assert str((T | T) & T) == '(True | True) & True'
 
-def test_or_evaluate():
+def test_OR_evaluate():
     assert (T | T).evaluate() == True
     assert (T | F).evaluate() == True
     assert (F | T).evaluate() == True
@@ -94,29 +92,29 @@ def test_or_evaluate():
 
 
 
-def test_not_str_and_repr():
+def test_NOT_str_and_repr():
     assert str(Not(T)) == '~True'
     assert str(Not(F)) == '~False'
 
     assert repr(Not(T)) == 'Not(Const(True))'
     assert repr(Not(F)) == 'Not(Const(False))'
 
-def test_shortcut_for_not():
+def test_shortcut_for_NOT():
     assert ~T == Not(T)
     assert ~F == Not(F)
 
-def test_nested_not_str():
+def test_nested_NOT_str():
     assert str(~(~T)) == '~~True'
 
-def test_not_binds_more_tightly_than_and():
+def test_NOT_binds_more_tightly_than_AND():
     assert str((~T) & T) == '~True & True'
     assert str(~(T & T)) == '~(True & True)'
 
-def test_not_emits_at_precedence_80():
+def test_NOT_emits_at_precedence_80():
     assert f'{~T:80}' == '~True'
     assert f'{~T:81}' == '(~True)'
 
-def test_not_evaluate():
+def test_NOT_evaluate():
     assert (~T).evaluate() == False
     assert (~F).evaluate() == True
 

@@ -73,6 +73,9 @@ class Const(BoolExpr):
     def evaluate_in(self, context: dict[str, bool]) -> bool:
         return self.value
 
+F = Const(False)
+T = Const(True)
+
 @dataclass
 class And(BoolExpr):
     left: BoolExpr
