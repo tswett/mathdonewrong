@@ -85,6 +85,8 @@ class ComposedProof:
 
         return destructor.composed_proof(proof1_, proof2_)
 
+# TODO: Eventually we want to define all the other kinds of proofs too...
+
 class BoolProofDestructor:
     def or_associativity(self, a: BoolExpr, b: BoolExpr) -> T:
         raise NotImplementedError
@@ -94,3 +96,5 @@ class BoolProofDestructor:
 
     def composed_proof(self, proof1: T, proof2: T) -> T:
         raise NotImplementedError
+
+    # TODO: list all the other kinds of proofs too
