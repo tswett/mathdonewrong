@@ -12,6 +12,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
+# TODO: All of this is going to be replaced with a new implementation based on
+# expressions.Expression.
+
 class BoolExpr:
     def __str__(self):
         raise NotImplementedError
