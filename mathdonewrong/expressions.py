@@ -11,6 +11,33 @@
 from dataclasses import dataclass
 
 class Expression:
+    precedence = 100
+
+    def __str__(self):
+        raise NotImplementedError
+
+    def __format__(self, format_spec: str):
+        """Format using the specified precedence
+
+        Format this boolean expression using the specified precedence limit,
+        specified as a string containing an integer.
+
+        The precedence limit is the minimum (loosest) precedence of any operator
+        that can appear in the output outside of parentheses. If the expression
+        contains an operator that binds more loosely than the limit, then
+        parentheses will be added around it in at least one place.
+        """
+
+        if format_spec == '':
+            precedence = 0
+        else:
+            precedence = int(format_spec)
+
+        if precedence <= self.precedence:
+            return str(self)
+        else:
+            return f'({str(self)})'
+
     def evaluate_in(self, algebra, context):
         raise NotImplementedError
 

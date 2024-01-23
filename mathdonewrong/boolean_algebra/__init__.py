@@ -11,11 +11,14 @@
 from mathdonewrong.algebras import Algebra, implement
 import mathdonewrong.expressions as ex
 
-And = Not = Or = Var = None
+Not = Or = Var = None
 
 class BoolExpr(ex.Expression):
     def evaluate(self):
         return self.evaluate_in(StandardBooleanAlgebra(), {})
+
+    def __and__(self, other):
+        return And(self, other)
 
 class Const(BoolExpr, ex.Const):
     value: bool
@@ -26,6 +29,18 @@ class Const(BoolExpr, ex.Const):
 
     def __repr__(self):
         return f'Const({self.value})'
+
+class And(BoolExpr, ex.Oper):
+    precedence = 60
+
+    def __init__(self, left, right):
+        ex.Oper.__init__(self, '&', (left, right))
+
+    def __str__(self):
+        return f'{self.operands[0]:60} & {self.operands[1]:61}'
+
+    def __repr__(self):
+        return f'And({", ".join(repr(operand) for operand in self.operands)})'
 
 F = Const('False')
 T = Const('True')
@@ -38,3 +53,7 @@ class StandardBooleanAlgebra(Algebra):
     @implement('False')
     def false(self):
         return False
+
+    @implement('&')
+    def and_(self, left, right):
+        return left and right

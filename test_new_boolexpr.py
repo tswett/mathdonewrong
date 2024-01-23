@@ -25,7 +25,6 @@ def test_can_evaluate_const():
 
 
 
-@pytest.mark.skip
 def test_AND_str_and_repr():
     assert str(And(T, T)) == 'True & True'
     assert str(And(T, F)) == 'True & False'
@@ -35,13 +34,11 @@ def test_AND_str_and_repr():
     assert repr(And(T, F)) == 'And(Const(True), Const(False))'
     assert repr(And(F, F)) == 'And(Const(False), Const(False))'
 
-@pytest.mark.skip
 def test_shortcut_for_AND():
     assert T & T == And(T, T)
     assert T & F == And(T, F)
     assert F & F == And(F, F)
 
-@pytest.mark.skip
 def test_nested_AND_str():
     assert str((T & T) & T) == 'True & True & True'
 
@@ -51,7 +48,6 @@ def test_nested_AND_str():
 
     assert str((T & (T & T)) & T) == 'True & (True & True) & True'
 
-@pytest.mark.skip
 def test_AND_evaluate():
     assert (T & T).evaluate() == True
     assert (T & F).evaluate() == False
