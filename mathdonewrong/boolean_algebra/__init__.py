@@ -11,11 +11,9 @@
 from mathdonewrong.algebras import Algebra, implement
 import mathdonewrong.expressions as ex
 
-Var = None
-
 class BoolExpr(ex.Expression):
-    def evaluate(self):
-        return self.evaluate_in(StandardBooleanAlgebra(), {})
+    def evaluate(self, context=None):
+        return self.evaluate_in(StandardBooleanAlgebra(), context or {})
 
     def __and__(self, other):
         return And(self, other)
@@ -38,6 +36,9 @@ class Const(BoolExpr, ex.Const):
 
 F = Const('False')
 T = Const('True')
+
+class Var(BoolExpr, ex.Var):
+    pass
 
 class And(BoolExpr, ex.Oper):
     precedence = 60

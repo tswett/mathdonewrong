@@ -48,6 +48,12 @@ class Var(Expression):
     def evaluate_in(self, algebra, context):
         return context[self.name]
 
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return f"{type(self).__name__}({self.name!r})"
+
 @dataclass
 class Oper(Expression):
     name: str

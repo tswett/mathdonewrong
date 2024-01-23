@@ -122,7 +122,6 @@ def test_NOT_evaluate():
 
 
 
-@pytest.mark.skip
 def test_var_str_and_repr():
     assert str(Var('x')) == 'x'
     assert str(Var('y')) == 'y'
@@ -130,11 +129,9 @@ def test_var_str_and_repr():
     assert repr(Var('x')) == "Var('x')"
     assert repr(Var('y')) == "Var('y')"
 
-@pytest.mark.skip
 def test_nested_var_str():
     assert str(Var('x') & Var('y')) == 'x & y'
 
-@pytest.mark.skip
 def test_var_evaluate():
     x, y = Var('x'), Var('y')
 
@@ -143,7 +140,6 @@ def test_var_evaluate():
     assert y.evaluate({'x': True, 'y': False}) == False
     assert y.evaluate({'x': False, 'y': True}) == True
 
-@pytest.mark.skip
 def test_complex_evaluate():
     x, y = Var('x'), Var('y')
 
