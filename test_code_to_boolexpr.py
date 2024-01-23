@@ -10,7 +10,7 @@
 
 import pytest
 
-from mathdonewrong.boolexpr import And, F, Not, Or, T, Var
+from mathdonewrong.boolean_algebra import And, F, Not, Or, T, Var
 from mathdonewrong.code_to_boolexpr import code_to_boolexpr
 
 def test_from_code_constant():

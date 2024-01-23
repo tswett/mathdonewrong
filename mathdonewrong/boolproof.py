@@ -12,7 +12,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TypeVar
 
-from mathdonewrong.boolexpr import BoolExpr
+from mathdonewrong.boolean_algebra import BoolExpr
 
 T = TypeVar('T')
 

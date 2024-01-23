@@ -9,7 +9,7 @@
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
 import pytest
-from mathdonewrong.boolexpr import BoolExpr, Var
+from mathdonewrong.boolean_algebra import BoolExpr, Var
 from mathdonewrong.boolproof import BoolProofDestructor, ComposedProof, OrAssociativity, OrCommutativity
 
 def test_or_commutativity():

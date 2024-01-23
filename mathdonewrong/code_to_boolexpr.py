@@ -12,7 +12,7 @@ import dis
 from dis import Instruction
 from typing import Optional
 
-from mathdonewrong.boolexpr import BoolExpr, Const, Var
+from mathdonewrong.boolean_algebra import BoolExpr, Const, Var
 
 def code_to_boolexpr(code) -> BoolExpr:
     return CodeWalker.code_to_boolexpr(code)
