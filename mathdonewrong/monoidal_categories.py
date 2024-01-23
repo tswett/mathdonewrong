@@ -57,7 +57,17 @@ class MonoidalCategory(Category):
     def right_unitor_inv(self, A: Ob) -> Arr[A, tensor(A, unit)]:
         raise NotImplementedError
 
-class CategoryOfTupleTypes(MonoidalCategory):
+class BraidedMonoidalCategory(MonoidalCategory):
+    def braid(self, A: Ob, B: Ob) -> Arr[tensor(A, B), tensor(B, A)]:
+        raise NotImplementedError
+
+    def braid_inv(self, A: Ob, B: Ob) -> Arr[tensor(B, A), tensor(A, B)]:
+        raise NotImplementedError
+
+class SymmetricMonoidalCategory(BraidedMonoidalCategory):
+    pass
+
+class CategoryOfTupleTypes(SymmetricMonoidalCategory):
     Ob = tuple[type, ...]
     Arr = Callable
 
@@ -93,3 +103,9 @@ class CategoryOfTupleTypes(MonoidalCategory):
 
     def right_unitor_inv(self, A: Ob) -> Arr[A, tensor(A, unit)]:
         return lambda *args: args
+
+    def braid(self, A: Ob, B: Ob) -> Arr[tensor(A, B), tensor(B, A)]:
+        return lambda *args: args[len(A):] + args[:len(A)]
+
+    def braid_inv(self, A: Ob, B: Ob) -> Arr[tensor(B, A), tensor(A, B)]:
+        return lambda *args: args[len(B):] + args[:len(B)]

@@ -35,3 +35,6 @@ def test_CategoryOfTupleTypes():
     assert cat.left_unitor_inv((int, str, float))(1, 'hello', 3.5) == (1, 'hello', 3.5)
     assert cat.right_unitor((int, str, float))(1, 'hello', 3.5) == (1, 'hello', 3.5)
     assert cat.right_unitor_inv((int, str, float))(1, 'hello', 3.5) == (1, 'hello', 3.5)
+
+    assert cat.braid((int, str), (float,))(1, 'hello', 3.5) == (3.5, 1, 'hello')
+    assert cat.braid_inv((int, str), (float,))(3.5, 1, 'hello') == (1, 'hello', 3.5)
