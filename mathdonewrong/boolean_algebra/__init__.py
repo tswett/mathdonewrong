@@ -11,7 +11,7 @@
 from mathdonewrong.algebras import Algebra, implement
 import mathdonewrong.expressions as ex
 
-Not = Or = Var = None
+Var = None
 
 class BoolExpr(ex.Expression):
     def evaluate(self):
@@ -19,6 +19,12 @@ class BoolExpr(ex.Expression):
 
     def __and__(self, other):
         return And(self, other)
+
+    def __or__(self, other):
+        return Or(self, other)
+
+    def __invert__(self):
+        return Not(self)
 
 class Const(BoolExpr, ex.Const):
     value: bool
@@ -29,6 +35,9 @@ class Const(BoolExpr, ex.Const):
 
     def __repr__(self):
         return f'Const({self.value})'
+
+F = Const('False')
+T = Const('True')
 
 class And(BoolExpr, ex.Oper):
     precedence = 60
@@ -42,8 +51,29 @@ class And(BoolExpr, ex.Oper):
     def __repr__(self):
         return f'And({", ".join(repr(operand) for operand in self.operands)})'
 
-F = Const('False')
-T = Const('True')
+class Or(BoolExpr, ex.Oper):
+    precedence = 50
+
+    def __init__(self, left, right):
+        ex.Oper.__init__(self, '|', (left, right))
+
+    def __str__(self):
+        return f'{self.operands[0]:50} | {self.operands[1]:51}'
+
+    def __repr__(self):
+        return f'Or({", ".join(repr(operand) for operand in self.operands)})'
+
+class Not(BoolExpr, ex.Oper):
+    precedence = 80
+
+    def __init__(self, operand):
+        ex.Oper.__init__(self, '~', (operand,))
+
+    def __str__(self):
+        return f'~{self.operands[0]:80}'
+
+    def __repr__(self):
+        return f'Not({self.operands[0]!r})'
 
 class StandardBooleanAlgebra(Algebra):
     @implement('True')
@@ -57,3 +87,11 @@ class StandardBooleanAlgebra(Algebra):
     @implement('&')
     def and_(self, left, right):
         return left and right
+
+    @implement('|')
+    def or_(self, left, right):
+        return left or right
+
+    @implement('~')
+    def not_(self, operand):
+        return not operand
