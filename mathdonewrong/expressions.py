@@ -89,3 +89,7 @@ class PrefixOper(Oper):
 
     def __repr__(self):
         return f'{type(self).__name__}({self.operands[0]!r})'
+
+class NamedOper(Oper):
+    def __init__(self, *operands):
+        super().__init__(type(self).__name__, operands)

@@ -13,58 +13,61 @@ import mathdonewrong.expressions as ex
 class MonoidalExpr(ex.Expression):
     pass
 
-class Id(MonoidalExpr, ex.Oper):
+class Var(MonoidalExpr, ex.Var):
+    pass
+
+class Id(MonoidalExpr, ex.NamedOper):
     # ==> A -> A
     pass
 
-class Compose(MonoidalExpr, ex.Oper):
+class Compose(MonoidalExpr, ex.NamedOper):
     # A -> B, B -> C ==> A -> C
     pass
 
-class Stack(MonoidalExpr, ex.Oper):
+class Stack(MonoidalExpr, ex.NamedOper):
     # A -> C, B -> D ==> A | B -> C | D
     pass
 
-class AssocRight(MonoidalExpr, ex.Oper):
+class AssocRight(MonoidalExpr, ex.NamedOper):
     # ==> (A | B) | C -> A | (B | C)
     pass
 
-class AssocLeft(MonoidalExpr, ex.Oper):
+class AssocLeft(MonoidalExpr, ex.NamedOper):
     # ==> A | (B | C) -> (A | B) | C
     pass
 
-class Unit(MonoidalExpr, ex.Oper):
+class Unit(MonoidalExpr, ex.NamedOper):
     # 1
     pass
 
-class UnitLeft(MonoidalExpr, ex.Oper):
+class UnitLeft(MonoidalExpr, ex.NamedOper):
     # ==> A -> 1 | A
     pass
 
-class UnitRight(MonoidalExpr, ex.Oper):
+class UnitRight(MonoidalExpr, ex.NamedOper):
     # ==> A -> A | 1
     pass
 
-class UnitLeftInv(MonoidalExpr, ex.Oper):
+class UnitLeftInv(MonoidalExpr, ex.NamedOper):
     # ==> 1 | A -> A
     pass
 
-class UnitRightInv(MonoidalExpr, ex.Oper):
+class UnitRightInv(MonoidalExpr, ex.NamedOper):
     # ==> A | 1 -> A
     pass
 
-class Braid(MonoidalExpr, ex.Oper):
+class Braid(MonoidalExpr, ex.NamedOper):
     # ==> A | B -> B | A
     pass
 
-class BraidInv(MonoidalExpr, ex.Oper):
+class BraidInv(MonoidalExpr, ex.NamedOper):
     # ==> B | A -> A | B
     pass
 
-class Drop(MonoidalExpr, ex.Oper):
+class Drop(MonoidalExpr, ex.NamedOper):
     # ==> A -> 1
     pass
 
-class Diagonal(MonoidalExpr, ex.Oper):
+class Diagonal(MonoidalExpr, ex.NamedOper):
     # ==> A -> A | A
     pass

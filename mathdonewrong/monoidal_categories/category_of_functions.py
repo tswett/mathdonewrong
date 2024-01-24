@@ -8,20 +8,17 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
-class TypeTree:
-    as_tuple: tuple[type, ...]
+from dataclasses import dataclass
+from typing import Callable
+from mathdonewrong.monoidal_categories.categories import CartesianMonoidalCategory
 
-class Zero(TypeTree):
-    def __init__(self):
-        self.as_tuple = ()
+TypeTree = type | tuple[()] | tuple['TypeTree', 'TypeTree']
 
-class Single(TypeTree):
-    def __init__(self, t: type):
-        self.as_tuple = (t,)
-
-class Pair(TypeTree):
-    def __init__(self, left: TypeTree, right: TypeTree):
-        self.as_tuple = left.as_tuple + right.as_tuple
+def flatten(t: TypeTree) -> tuple[type, ...]:
+    if isinstance(t, tuple):
+        return tuple(type for tuple in flatten(t) for type in tuple)
+    else:
+        return (t,)
 
 @dataclass
 class TFunction:
@@ -31,3 +28,22 @@ class TFunction:
 
     def __call__(self, *args):
         return self.func(*args)
+
+def tfunction(domain: TypeTree, codomain: TypeTree) -> Callable[[Callable], TFunction]:
+    def decorator(func: Callable) -> TFunction:
+        return TFunction(domain, codomain, func)
+
+    return decorator
+
+class CategoryOfFunctions(CartesianMonoidalCategory):
+    def id(self, A: TypeTree) -> TFunction:
+        def func(*args):
+            return args
+
+        return TFunction(A, A, func)
+
+    def compose(self, f: TFunction, g: TFunction) -> TFunction:
+        def func(*args):
+            return g(*f(*args))
+
+        return TFunction(f.domain, g.codomain, func)

@@ -19,7 +19,7 @@ class Category(Algebra):
     def compose(self, f: Arr[A, B], g: Arr[B, C]) -> Arr[A, C]:
         raise NotImplementedError
 
-class MonoidalCategory(Algebra):
+class MonoidalCategory(Category):
     def stack(self, f: Arr[A, C], g: Arr[B, D]) -> Arr[A * B, C * D]:
         raise NotImplementedError
 

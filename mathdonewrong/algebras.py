@@ -25,12 +25,16 @@ class AlgebraClass(type):
 
         return newclass
 
+def funcname(operator_name):
+    with_underscores = operator_name[0] + ''.join('_' + c if c.isupper() else c for c in operator_name[1:])
+    return with_underscores.lower()
+
 class Algebra(metaclass=AlgebraClass):
     def operate(self, operator, operands):
         if operator in type(self).operators:
             return getattr(self, type(self).operators[operator])(*operands)
-        elif hasattr(self, operator):
-            return getattr(self, operator)(*operands)
+        elif hasattr(self, funcname(operator)):
+            return getattr(self, funcname(operator))(*operands)
         else:
             raise NotImplementedError(f'operator {operator} not implemented in {self}')
 
