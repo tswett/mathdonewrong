@@ -8,8 +8,9 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
-from mathdonewrong.monoidal_categories import Compose, Id, Var
+from mathdonewrong.monoidal_categories import AssocLeft, AssocRight, Compose, Id, Stack, Unit, Var
 from mathdonewrong.monoidal_categories.category_of_functions import CategoryOfFunctions, tfunction
+from mathdonewrong.monoidal_categories.monoidalexpr import Braid, BraidInv, Diagonal, Drop, UnitLeft, UnitLeftInv, UnitRight, UnitRightInv
 
 cat = CategoryOfFunctions()
 
@@ -61,3 +62,94 @@ def test_category_of_functions_compose():
 
     func = expr.evaluate_in(cat, {'f': ignore_number, 'g': return_michigan})
     assert func(18) == ('Michigan',)
+
+def test_category_of_functions_stack():
+    expr = Stack(Var('f'), Var('g'))
+
+    func = expr.evaluate_in(cat, {'f': join_backwards, 'g': join_backwards})
+    assert func('this', 'that', 'these', 'those') == ('that this', 'those these')
+
+def test_category_of_functions_assoc_right():
+    expr = AssocRight(Var('A'), Var('B'), Var('C'))
+
+    func = expr.evaluate_in(cat, {'A': int, 'B': str, 'C': float})
+    assert func.domain == ((int, str), float)
+    assert func.codomain == (int, (str, float))
+    assert func(80, 'carrot', 1.2) == (80, 'carrot', 1.2)
+
+def test_category_of_functions_assoc_left():
+    expr = AssocLeft(Var('A'), Var('B'), Var('C'))
+
+    func = expr.evaluate_in(cat, {'A': int, 'B': str, 'C': float})
+    assert func.domain == (int, (str, float))
+    assert func.codomain == ((int, str), float)
+    assert func(80, 'carrot', 1.2) == (80, 'carrot', 1.2)
+
+def test_category_of_functions_unit():
+    expr = Unit()
+
+    assert expr.evaluate_in(cat, {}) == ()
+
+def test_category_of_functions_unit_left():
+    expr = UnitLeft(Var('A'))
+
+    func = expr.evaluate_in(cat, {'A': int})
+    assert func.domain == int
+    assert func.codomain == ((), int)
+    assert func(42) == (42,)
+
+def test_category_of_functions_unit_right():
+    expr = UnitRight(Var('A'))
+
+    func = expr.evaluate_in(cat, {'A': int})
+    assert func.domain == int
+    assert func.codomain == (int, ())
+    assert func(42) == (42,)
+
+def test_category_of_functions_unit_left_inv():
+    expr = UnitLeftInv(Var('A'))
+
+    func = expr.evaluate_in(cat, {'A': int})
+    assert func.domain == ((), int)
+    assert func.codomain == int
+    assert func(42) == (42,)
+
+def test_category_of_functions_unit_right_inv():
+    expr = UnitRightInv(Var('A'))
+
+    func = expr.evaluate_in(cat, {'A': int})
+    assert func.domain == (int, ())
+    assert func.codomain == int
+    assert func(42) == (42,)
+
+def test_category_of_functions_braid():
+    expr = Braid(Var('A'), Var('B'))
+
+    func = expr.evaluate_in(cat, {'A': (int, str), 'B': ((str, float), int)})
+    assert func.domain == ((int, str), ((str, float), int))
+    assert func.codomain == (((str, float), int), (int, str))
+    assert func(42, 'carrot', 'apple', 1.2, 84) == ('apple', 1.2, 84, 42, 'carrot')
+
+def test_category_of_functions_braid_inv():
+    expr = BraidInv(Var('A'), Var('B'))
+
+    func = expr.evaluate_in(cat, {'A': (int, str), 'B': ((str, float), int)})
+    assert func.domain == (((str, float), int), (int, str))
+    assert func.codomain == ((int, str), ((str, float), int))
+    assert func('apple', 1.2, 84, 42, 'carrot') == (42, 'carrot', 'apple', 1.2, 84)
+
+def test_category_of_functions_drop():
+    expr = Drop(Var('A'))
+
+    func = expr.evaluate_in(cat, {'A': (str, int)})
+    assert func.domain == (str, int)
+    assert func.codomain == ()
+    assert func('ladybug', 90) == ()
+
+def test_category_of_functions_diagonal():
+    expr = Diagonal(Var('A'))
+
+    func = expr.evaluate_in(cat, {'A': (int, float)})
+    assert func.domain == (int, float)
+    assert func.codomain == ((int, float), (int, float))
+    assert func(28, 8.6) == (28, 8.6, 28, 8.6)

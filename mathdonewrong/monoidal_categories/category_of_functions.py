@@ -16,7 +16,7 @@ TypeTree = type | tuple[()] | tuple['TypeTree', 'TypeTree']
 
 def flatten(t: TypeTree) -> tuple[type, ...]:
     if isinstance(t, tuple):
-        return tuple(type for tuple in flatten(t) for type in tuple)
+        return tuple(ty for flat in map(flatten, t) for ty in flat)
     else:
         return (t,)
 
@@ -47,3 +47,77 @@ class CategoryOfFunctions(CartesianMonoidalCategory):
             return g(*f(*args))
 
         return TFunction(f.domain, g.codomain, func)
+
+    def stack(self, f: TFunction, g: TFunction) -> TFunction:
+        def func(*args):
+            f_domain_length = len(flatten(f.domain))
+            f_result = f(*args[:f_domain_length])
+            g_result = g(*args[f_domain_length:])
+            return f_result + g_result
+
+        return TFunction((f.domain, g.domain), (f.codomain, g.codomain), func)
+
+    def assoc_right(self, A: TypeTree, B: TypeTree, C: TypeTree) -> TFunction:
+        def func(*args):
+            return args
+
+        return TFunction(((A, B), C), (A, (B, C)), func)
+
+    def assoc_left(self, A: TypeTree, B: TypeTree, C: TypeTree) -> TFunction:
+        def func(*args):
+            return args
+
+        return TFunction((A, (B, C)), ((A, B), C), func)
+
+    def unit(self) -> TypeTree:
+        return ()
+
+    def unit_left(self, A: TypeTree) -> TFunction:
+        def func(*args):
+            return args
+
+        return TFunction(A, ((), A), func)
+
+    def unit_right(self, A: TypeTree) -> TFunction:
+        def func(*args):
+            return args
+
+        return TFunction(A, (A, ()), func)
+
+    def unit_left_inv(self, A: TypeTree) -> TFunction:
+        def func(*args):
+            return args
+
+        return TFunction(((), A), A, func)
+
+    def unit_right_inv(self, A: TypeTree) -> TFunction:
+        def func(*args):
+            return args
+
+        return TFunction((A, ()), A, func)
+
+    def braid(self, A: TypeTree, B: TypeTree) -> TFunction:
+        def func(*args):
+            A_length = len(flatten(A))
+            return args[A_length:] + args[:A_length]
+
+        return TFunction((A, B), (B, A), func)
+
+    def braid_inv(self, A: TypeTree, B: TypeTree) -> TFunction:
+        def func(*args):
+            B_length = len(flatten(B))
+            return args[B_length:] + args[:B_length]
+
+        return TFunction((B, A), (A, B), func)
+
+    def drop(self, A: TypeTree) -> TFunction:
+        def func(*args):
+            return ()
+
+        return TFunction(A, (), func)
+
+    def diagonal(self, A: TypeTree) -> TFunction:
+        def func(*args):
+            return args + args
+
+        return TFunction(A, (A, A), func)
