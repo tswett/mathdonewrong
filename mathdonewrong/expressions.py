@@ -69,3 +69,23 @@ class Const(Oper):
 
     def __str__(self):
         return self.name
+
+class BinaryOper(Oper):
+    def __init__(self, left, right):
+        super().__init__(self.name, (left, right))
+
+    def __str__(self):
+        return f'{self.operands[0]:{self.precedence}} {self.name} {self.operands[1]:{self.precedence + 1}}'
+
+    def __repr__(self):
+        return f'{type(self).__name__}({", ".join(repr(operand) for operand in self.operands)})'
+
+class PrefixOper(Oper):
+    def __init__(self, operand):
+        super().__init__(self.name, (operand,))
+
+    def __str__(self):
+        return f'{self.name}{self.operands[0]:{self.precedence}}'
+
+    def __repr__(self):
+        return f'{type(self).__name__}({self.operands[0]!r})'

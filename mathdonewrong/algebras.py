@@ -15,14 +15,20 @@ class AlgebraClass(type):
     operators: dict[str, Callable]
 
     def __new__(cls, name, bases, attrs):
-        cls.operators = {}
-        return super().__new__(cls, name, bases, attrs)
+        newclass = super().__new__(cls, name, bases, attrs)
+
+        newclass.operators = {}
+
+        for base in bases:
+            if hasattr(base, 'operators'):
+                newclass.operators.update(base.operators)
+
+        return newclass
 
 class Algebra(metaclass=AlgebraClass):
     def operate(self, operator, operands):
         if operator in type(self).operators:
-            bound_operator = MethodType(type(self).operators[operator], self)
-            return bound_operator(*operands)
+            return getattr(self, type(self).operators[operator])(*operands)
         elif hasattr(self, operator):
             return getattr(self, operator)(*operands)
         else:
@@ -34,6 +40,6 @@ def implement(name):
             self.func = func
 
         def __set_name__(self, owner, attr_name):
-            owner.operators[name] = self.func
+            owner.operators[name] = attr_name
 
     return Decorator
