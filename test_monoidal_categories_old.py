@@ -8,7 +8,7 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
-from mathdonewrong.monoidal_categories import CategoryOfTupleTypes
+from mathdonewrong.monoidal_categories_old import CategoryOfTupleTypes
 
 def test_CategoryOfTupleTypes():
     cat = CategoryOfTupleTypes()
