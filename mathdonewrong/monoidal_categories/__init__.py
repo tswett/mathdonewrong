@@ -8,4 +8,4 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
-from mathdonewrong.monoidal_categories.monoidalexpr import AssocLeft, AssocRight, Braid, Compose, Drop, Id, Stack, Unit, UnitLeft, UnitLeftInv, UnitRight, UnitRightInv, Var
+from mathdonewrong.monoidal_categories.monoidalexpr import AssocLeft, AssocRight, Braid, BraidInv, Compose, Curry, CurryInv, Diagonal, Drop, Id, Into, Stack, Unit, UnitLeft, UnitLeftInv, UnitRight, UnitRightInv, Var

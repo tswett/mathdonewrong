@@ -25,15 +25,15 @@ class Compose(MonoidalExpr, ex.NamedOper):
     pass
 
 class Stack(MonoidalExpr, ex.NamedOper):
-    # A -> C, B -> D ==> A | B -> C | D
+    # A -> C, B -> D ==> A * B -> C * D
     pass
 
 class AssocRight(MonoidalExpr, ex.NamedOper):
-    # ==> (A | B) | C -> A | (B | C)
+    # ==> (A * B) * C -> A * (B * C)
     pass
 
 class AssocLeft(MonoidalExpr, ex.NamedOper):
-    # ==> A | (B | C) -> (A | B) | C
+    # ==> A * (B * C) -> (A * B) * C
     pass
 
 class Unit(MonoidalExpr, ex.NamedOper):
@@ -41,27 +41,27 @@ class Unit(MonoidalExpr, ex.NamedOper):
     pass
 
 class UnitLeft(MonoidalExpr, ex.NamedOper):
-    # ==> A -> 1 | A
+    # ==> A -> 1 * A
     pass
 
 class UnitRight(MonoidalExpr, ex.NamedOper):
-    # ==> A -> A | 1
+    # ==> A -> A * 1
     pass
 
 class UnitLeftInv(MonoidalExpr, ex.NamedOper):
-    # ==> 1 | A -> A
+    # ==> 1 * A -> A
     pass
 
 class UnitRightInv(MonoidalExpr, ex.NamedOper):
-    # ==> A | 1 -> A
+    # ==> A * 1 -> A
     pass
 
 class Braid(MonoidalExpr, ex.NamedOper):
-    # ==> A | B -> B | A
+    # ==> A * B -> B * A
     pass
 
 class BraidInv(MonoidalExpr, ex.NamedOper):
-    # ==> B | A -> A | B
+    # ==> B * A -> A * B
     pass
 
 class Drop(MonoidalExpr, ex.NamedOper):
@@ -69,5 +69,17 @@ class Drop(MonoidalExpr, ex.NamedOper):
     pass
 
 class Diagonal(MonoidalExpr, ex.NamedOper):
-    # ==> A -> A | A
+    # ==> A -> A * A
+    pass
+
+class Into(MonoidalExpr, ex.NamedOper):
+    # B -> C ==> A >> B -> A >> C
+    pass
+
+class Curry(MonoidalExpr, ex.NamedOper):
+    # A * B -> C ==> A -> B >> C
+    pass
+
+class CurryInv(MonoidalExpr, ex.NamedOper):
+    # A -> B >> C ==> A * B -> C
     pass

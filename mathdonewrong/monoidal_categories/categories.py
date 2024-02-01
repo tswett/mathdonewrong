@@ -63,7 +63,7 @@ class CartesianMonoidalCategory(SymmetricMonoidalCategory):
         raise NotImplementedError
 
 class ClosedMonoidalCategory(MonoidalCategory):
-    def into(self, f: Arr[A, B], C: Ob) -> Arr[B >> C, A >> C]:
+    def into(self, A: Ob, f: Arr[B, C]) -> Arr[A >> B, A >> C]:
         raise NotImplementedError
 
     def curry(self, f: Arr[A * B, C]) -> Arr[A, B >> C]:
