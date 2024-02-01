@@ -9,7 +9,7 @@
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
 from mathdonewrong.monoidal_categories import AssocLeft, AssocRight, Braid, BraidInv, Compose, Curry, CurryInv, Diagonal, Drop, Id, Into, Stack, Unit, UnitRight, UnitRightInv, UnitLeft, UnitLeftInv, Var
-from mathdonewrong.monoidal_categories.category_of_functions_2 import CategoryOfUnaryFunctions
+from mathdonewrong.monoidal_categories.category_of_functions import CategoryOfUnaryFunctions
 
 cat = CategoryOfUnaryFunctions()
 
