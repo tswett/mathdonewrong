@@ -41,6 +41,9 @@ class Expression:
     def evaluate_in(self, algebra, context):
         raise NotImplementedError
 
+    def traverse(self, visitor):
+        raise NotImplementedError
+
 @dataclass
 class Var(Expression):
     name: str
@@ -54,6 +57,9 @@ class Var(Expression):
     def __repr__(self):
         return f"{type(self).__name__}({self.name!r})"
 
+    def traverse(self, visitor):
+        return visitor.visit_var(self)
+
 @dataclass
 class Oper(Expression):
     name: str
@@ -62,6 +68,17 @@ class Oper(Expression):
     def evaluate_in(self, algebra, context):
         operand_values = [operand.evaluate_in(algebra, context) for operand in self.operands]
         return algebra.operate(self.name, operand_values)
+
+    def traverse(self, visitor):
+        return visitor.visit_oper(self)
+
+    def copy_with_new_operands(self, new_operands):
+        # This feels like an awful hack, but it seems to work.
+        copy = type(self).__new__(type(self))
+        for name, value in self.__dict__.items():
+            setattr(copy, name, value)
+        copy.operands = tuple(new_operands)
+        return copy
 
 class Const(Oper):
     def __init__(self, value):
