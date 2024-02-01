@@ -61,3 +61,16 @@ class CartesianMonoidalCategory(SymmetricMonoidalCategory):
 
     def diagonal(self, A: Ob) -> Arr[A, A * A]:
         raise NotImplementedError
+
+class ClosedMonoidalCategory(MonoidalCategory):
+    def into(self, f: Arr[A, B], C: Ob) -> Arr[B >> C, A >> C]:
+        raise NotImplementedError
+
+    def curry(self, f: Arr[A * B, C]) -> Arr[A, B >> C]:
+        raise NotImplementedError
+
+    def curry_inv(self, f: Arr[A, B >> C]) -> Arr[A * B, C]:
+        raise NotImplementedError
+
+class CartesianClosedCategory(CartesianMonoidalCategory, ClosedMonoidalCategory):
+    pass
