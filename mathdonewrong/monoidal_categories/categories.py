@@ -52,7 +52,8 @@ class BraidedMonoidalCategory(MonoidalCategory):
         raise NotImplementedError
 
 class SymmetricMonoidalCategory(BraidedMonoidalCategory):
-    pass
+    def braid_inv(self, A: Ob, B: Ob) -> Arr[B * A, A * B]:
+        return self.braid(B, A)
 
 class CartesianMonoidalCategory(SymmetricMonoidalCategory):
     def drop(self, A: Ob) -> Arr[A, Unit]:

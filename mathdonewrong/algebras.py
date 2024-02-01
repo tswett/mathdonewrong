@@ -8,7 +8,6 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
-from types import MethodType
 from typing import Callable
 
 class AlgebraClass(type):

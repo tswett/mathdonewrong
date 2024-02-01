@@ -103,13 +103,6 @@ class CategoryOfFunctions(CartesianMonoidalCategory):
 
         return TFunction((A, B), (B, A), func)
 
-    def braid_inv(self, A: TypeTree, B: TypeTree) -> TFunction:
-        def func(*args):
-            B_length = len(flatten(B))
-            return args[B_length:] + args[:B_length]
-
-        return TFunction((B, A), (A, B), func)
-
     def drop(self, A: TypeTree) -> TFunction:
         def func(*args):
             return ()
