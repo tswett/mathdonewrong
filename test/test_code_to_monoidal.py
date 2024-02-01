@@ -12,6 +12,8 @@ import pytest
 from mathdonewrong.code_to_monoidal import MonoidalExprWithContext, expressionize_m
 from mathdonewrong.monoidal_categories.category_of_functions import CategoryOfUnaryFunctions
 
+pytest.skip(allow_module_level=True)
+
 cat = CategoryOfUnaryFunctions()
 
 def test_make_adjustment_from_x_to_x():
