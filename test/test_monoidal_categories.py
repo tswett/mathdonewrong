@@ -8,9 +8,8 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
-from mathdonewrong.monoidal_categories import AssocLeft, AssocRight, Compose, Id, Stack, Unit, Var
+from mathdonewrong.monoidal_categories import AssocLeft, AssocRight, Braid, BraidInv, Compose, Diagonal, Drop, Id, Stack, Unit, UnitLeft, UnitLeftInv, UnitRight, UnitRightInv, Var
 from mathdonewrong.monoidal_categories.category_of_functions import CategoryOfFunctions, tfunction
-from mathdonewrong.monoidal_categories.monoidalexpr import Braid, BraidInv, Diagonal, Drop, UnitLeft, UnitLeftInv, UnitRight, UnitRightInv
 
 cat = CategoryOfFunctions()
 
