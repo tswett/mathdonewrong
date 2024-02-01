@@ -80,12 +80,18 @@ class Oper(Expression):
         copy.operands = tuple(new_operands)
         return copy
 
+    def repr_like_named_oper(self):
+        return f'{type(self).__name__}({", ".join(repr(operand) for operand in self.operands)})'
+
 class Const(Oper):
     def __init__(self, value):
         super().__init__(str(value), ())
 
     def __str__(self):
         return self.name
+
+    def __repr__(self):
+        return f'{type(self).__name__}({self.name!r})'
 
 class BinaryOper(Oper):
     def __init__(self, left, right):
@@ -95,18 +101,22 @@ class BinaryOper(Oper):
         return f'{self.operands[0]:{self.precedence}} {self.name} {self.operands[1]:{self.precedence + 1}}'
 
     def __repr__(self):
-        return f'{type(self).__name__}({", ".join(repr(operand) for operand in self.operands)})'
+        return self.repr_like_named_oper()
 
 class PrefixOper(Oper):
     def __init__(self, operand):
         super().__init__(self.name, (operand,))
 
     def __str__(self):
-        return f'{self.name}{self.operands[0]:{self.precedence}}'
+        operand, = self.operands
+        return f'{self.name}{operand:{self.precedence}}'
 
     def __repr__(self):
-        return f'{type(self).__name__}({self.operands[0]!r})'
+        return self.repr_like_named_oper()
 
 class NamedOper(Oper):
     def __init__(self, *operands):
         super().__init__(type(self).__name__, operands)
+
+    def __repr__(self):
+        return self.repr_like_named_oper()

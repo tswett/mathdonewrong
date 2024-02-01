@@ -8,16 +8,14 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
+from _ast import AST
 import ast
 from ast import NodeVisitor
 import inspect
-from typing import Callable
+from typing import Any, Callable
 
-from mathdonewrong.expressions import Expression, NamedOper, Oper, Var
-
-class Apply(NamedOper):
-    # TODO: This should be defined somewhere else, but I'm not sure where yet
-    pass
+from mathdonewrong.expressions import Expression, Oper, Var
+from mathdonewrong.lambda_calc.lambda_exprs import Apply, LamConst, LamVar, Lambda
 
 class SubstitutionVisitor:
     def __init__(self, context: dict[str, Expression]):
@@ -40,8 +38,10 @@ class ExpressionizeNodeVisitor(NodeVisitor):
     def __init__(self):
         self.locals = {}
 
-    def visit_Module(self, node) -> Expression:
-        return self.visit(node.body[0])
+    def generic_visit(self, node):
+        raise NotImplementedError(f"Node type {type(node)} not implemented")
+
+    # Compound statements and the like
 
     def visit_FunctionDef(self, node) -> Expression:
         for statement in node.body:
@@ -49,21 +49,37 @@ class ExpressionizeNodeVisitor(NodeVisitor):
             if expr_maybe is not None:
                 return expr_maybe
 
-    def visit_Return(self, node) -> Expression:
-        return_expression = self.visit(node.value)
-        return substitute_vars(return_expression, self.locals)
+    def visit_Module(self, node) -> Expression:
+        return self.visit(node.body[0])
+
+    # Simple statements
 
     def visit_Assign(self, node) -> Expression:
         target_name = node.targets[0].id
         self.locals[target_name] = self.visit(node.value)
 
-    def visit_Name(self, node) -> Expression:
-        return Var(node.id)
+    def visit_Return(self, node) -> Expression:
+        return_expression = self.visit(node.value)
+        return substitute_vars(return_expression, self.locals)
+
+    # Expressions
 
     def visit_Call(self, node) -> Expression:
         func = self.visit(node.func)
         args = [self.visit(arg) for arg in node.args]
         return Apply(func, *args)
+
+    def visit_Constant(self, node) -> Expression:
+        return LamConst(repr(node.value))
+
+    def visit_Lambda(self, node) -> Expression:
+        param, = node.args.args
+        param_name = param.arg
+        body = self.visit(node.body)
+        return Lambda(param_name, body)
+
+    def visit_Name(self, node) -> Expression:
+        return LamVar(node.id)
 
 def expressionize(f: Callable) -> Callable:
     tree = ast.parse(inspect.getsource(f))
