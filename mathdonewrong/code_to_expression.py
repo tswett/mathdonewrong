@@ -81,7 +81,10 @@ class ExpressionizeNodeVisitor(NodeVisitor):
     def visit_Name(self, node) -> Expression:
         return LamVar(node.id)
 
-def expressionize(f: Callable) -> Callable:
+def code_to_expression(f: Callable) -> Expression:
     tree = ast.parse(inspect.getsource(f))
-    f.expression = ExpressionizeNodeVisitor().visit(tree)
+    return ExpressionizeNodeVisitor().visit(tree)
+
+def expressionize(f: Callable) -> Callable:
+    f.expression = code_to_expression(f)
     return f
