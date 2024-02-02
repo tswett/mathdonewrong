@@ -12,8 +12,21 @@ from __future__ import annotations
 from functools import reduce
 import inspect
 from typing import Any, Callable, TypeVar
+from mathdonewrong.algebras import Algebra
 
-class Monoid:
+from mathdonewrong.expressions import Expression, Literal, NamedOper
+
+class MonoidExpr(Expression):
+    def __mul__(self, other: MonoidExpr) -> MonoidExpr:
+        return Oper(self, other)
+
+class MonLiteral(MonoidExpr, Literal):
+    pass
+
+class Oper(MonoidExpr, NamedOper):
+    pass
+
+class Monoid(Algebra):
     T: type
 
     @property

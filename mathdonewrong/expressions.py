@@ -9,6 +9,7 @@
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
 from dataclasses import dataclass
+from typing import Any
 
 class Expression:
     precedence = 100
@@ -59,6 +60,22 @@ class Var(Expression):
 
     def traverse(self, visitor):
         return visitor.visit_var(self)
+
+@dataclass
+class Literal(Expression):
+    value: Any
+
+    def evaluate_in(self, algebra, context):
+        return self.value
+
+    def __str__(self):
+        return str(self.value)
+
+    def __repr__(self):
+        return f"{type(self).__name__}({self.value!r})"
+
+    def traverse(self, visitor):
+        return visitor.visit_literal(self)
 
 @dataclass
 class Oper(Expression):

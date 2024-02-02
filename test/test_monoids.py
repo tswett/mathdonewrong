@@ -9,7 +9,7 @@
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
 import pytest
-from mathdonewrong.monoids import MonoidHomomorphism, int_addition, int_multiplication, int_scale, string_monoid, tuple_monoid
+from mathdonewrong.monoids.monoids import MonLiteral, MonoidHomomorphism, int_addition, int_multiplication, int_scale, string_monoid, tuple_monoid
 
 def test_int_addition():
     assert int_addition.oper() == 0
@@ -33,6 +33,13 @@ def test_tuple_monoid():
     assert tuple_monoid.oper() == ()
     assert tuple_monoid.oper((1, 'hello')) == (1, 'hello')
     assert tuple_monoid.oper((1, 'hello'), (), ('world',)) == (1, 'hello', 'world')
+
+def test_evaluation():
+    L = MonLiteral
+    assert (L(5) * L(7) * L(3)).evaluate_in(int_addition, {}) == 15
+    assert (L(5) * L(7) * L(3)).evaluate_in(int_multiplication, {}) == 105
+    assert (L('boots') * L(' and') * L(' cats')).evaluate_in(string_monoid, {}) == 'boots and cats'
+    assert (L((1, 'hello')) * L(()) * L(('world',))).evaluate_in(tuple_monoid, {}) == (1, 'hello', 'world')
 
 def test_a_homomorphism():
     @MonoidHomomorphism
