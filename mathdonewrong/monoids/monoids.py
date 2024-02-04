@@ -9,21 +9,32 @@
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
 from __future__ import annotations
+from dataclasses import dataclass
 from functools import reduce
 import inspect
 from typing import Any, Callable, TypeVar
-from mathdonewrong.algebras import Algebra
+from mathdonewrong.algebras import Algebra, implement
 
-from mathdonewrong.expressions import Expression, Literal, NamedOper
+from mathdonewrong.expressions import Expression, Literal, NamedOper, Var
 
 class MonoidExpr(Expression):
     def __mul__(self, other: MonoidExpr) -> MonoidExpr:
-        return Oper(self, other)
+        return MonOper(self, other)
 
 class MonLiteral(MonoidExpr, Literal):
     pass
 
-class Oper(MonoidExpr, NamedOper):
+class MonVar(MonoidExpr, Var):
+    pass
+
+class Id(MonoidExpr, NamedOper):
+    pass
+
+class MonOper(MonoidExpr, NamedOper):
+    def __init__(self, left: MonoidExpr, right: MonoidExpr):
+        super().__init__(left, right)
+
+class Assoc(MonoidExpr, NamedOper):
     pass
 
 class Monoid(Algebra):
@@ -31,13 +42,20 @@ class Monoid(Algebra):
 
     @property
     def id(self) -> T:
+        return self.id_()
+
+    @implement('Id')
+    def id_(self) -> T:
         raise NotImplementedError
 
+    @implement('MonOper')
     def oper_(self, a: T, b: T) -> T:
         raise NotImplementedError
 
     def oper(self, *args: T) -> T:
         return reduce(self.oper_, args, self.id)
+
+    # TODO: add methods for left and right identity and associativity
 
 class CommutativeMonoid(Monoid):
     pass
@@ -112,3 +130,52 @@ def int_scale(x: int) -> MonoidHomomorphism:
         return x * y
 
     return f
+
+@dataclass
+class MonoidEquation:
+    lhs: MonoidExpr
+    rhs: MonoidExpr
+    valid: bool
+
+    def __init__(self, lhs: MonoidExpr, rhs: MonoidExpr = None, valid: bool = None):
+        rhs = rhs or lhs
+        valid = valid if valid is not None else True
+
+        if isinstance(lhs, MonoidEquation):
+            valid = valid and lhs.valid
+            lhs = lhs.lhs
+        if isinstance(rhs, MonoidEquation):
+            valid = valid and rhs.valid
+            rhs = rhs.rhs
+
+        self.lhs = lhs
+        self.rhs = rhs
+        self.valid = valid
+
+    def __mul__(self, other: MonoidEquation) -> MonoidEquation:
+        return MonoidEquation(self.lhs * other.lhs, self.rhs * other.rhs, self.valid and other.valid)
+
+EquationOrVar = MonoidEquation | MonVar
+
+class MonoidEqualityAlgebra(Monoid):
+    T = MonoidEquation
+
+    def id_(self) -> MonoidEquation:
+        return MonoidEquation(Id())
+
+    def oper_(self, a: EquationOrVar, b: EquationOrVar) -> MonoidEquation:
+        a, b = MonoidEquation(a), MonoidEquation(b)
+        return a * b
+
+    def assoc(self, a: EquationOrVar, b: EquationOrVar, c: EquationOrVar) -> MonoidEquation:
+        a, b, c = MonoidEquation(a), MonoidEquation(b), MonoidEquation(c)
+        return MonoidEquation((a * b) * c, a * (b * c))
+
+    def eq_symm(self, a: EquationOrVar) -> MonoidEquation:
+        a = MonoidEquation(a)
+        return MonoidEquation(a.rhs, a.lhs, a.valid)
+
+    def eq_trans(self, a: EquationOrVar, b: EquationOrVar) -> MonoidEquation:
+        a, b = MonoidEquation(a), MonoidEquation(b)
+        valid = a.valid and b.valid and a.rhs == b.lhs
+        return MonoidEquation(a.lhs, b.rhs, valid)

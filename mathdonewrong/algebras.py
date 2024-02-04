@@ -38,11 +38,12 @@ class Algebra(metaclass=AlgebraClass):
             raise NotImplementedError(f'operator {operator} not implemented in {self}')
 
 def implement(name):
-    class Decorator:
+    class ImplementDecorator:
         def __init__(self, func):
             self.func = func
 
         def __set_name__(self, owner, attr_name):
             owner.operators[name] = attr_name
+            setattr(owner, attr_name, self.func)
 
-    return Decorator
+    return ImplementDecorator
