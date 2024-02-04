@@ -70,6 +70,11 @@ def test_int_scale_homomorphism():
 
 eq = MonoidEqualityAlgebra()
 x, y, z = MonVar('x'), MonVar('y'), MonVar('z')
+context = {
+    'x': MonoidEquation.refl(x),
+    'y': MonoidEquation.refl(y),
+    'z': MonoidEquation.refl(z)
+}
 
 def test_equality_algebra_reflexivity():
     exprs = [
@@ -81,7 +86,7 @@ def test_equality_algebra_reflexivity():
     ]
 
     for expr in exprs:
-        equation = MonoidEquation(expr.evaluate_in(eq, {'x': x, 'y': y, 'z': z}))
+        equation = expr.evaluate_in(eq, context)
         assert equation.valid
         assert equation.lhs == expr
         assert equation.rhs == expr
@@ -89,7 +94,7 @@ def test_equality_algebra_reflexivity():
 def test_equality_algebra_associativity():
     expr = Assoc(x, y, z)
 
-    equation = MonoidEquation(expr.evaluate_in(eq, {'x': x, 'y': y, 'z': z}))
+    equation = expr.evaluate_in(eq, context)
     assert equation.valid
     assert equation.lhs == (x * y) * z
     assert equation.rhs == x * (y * z)
@@ -97,7 +102,7 @@ def test_equality_algebra_associativity():
 def test_equality_algebra_associativity_complex():
     expr = y * Assoc(x * z, x, y)
 
-    equation = MonoidEquation(expr.evaluate_in(eq, {'x': x, 'y': y, 'z': z}))
+    equation = expr.evaluate_in(eq, context)
     assert equation.valid
     assert equation.lhs == y * (((x * z) * x) * y)
     assert equation.rhs == y * ((x * z) * (x * y))
@@ -105,7 +110,7 @@ def test_equality_algebra_associativity_complex():
 def test_equality_algebra_associativity_very_complex():
     expr = x * Assoc(y * x, z, Assoc(z, y, z))
 
-    equation = MonoidEquation(expr.evaluate_in(eq, {'x': x, 'y': y, 'z': z}))
+    equation = expr.evaluate_in(eq, context)
     assert equation.valid
     assert equation.lhs == x * (((y * x) * z) * ((z * y) * z))
     assert equation.rhs == x * ((y * x) * (z * (z * (y * z))))
@@ -113,7 +118,7 @@ def test_equality_algebra_associativity_very_complex():
 def test_equality_algebra_symmetry():
     expr = EqSymm(Assoc(x, y, z))
 
-    equation = MonoidEquation(expr.evaluate_in(eq, {'x': x, 'y': y, 'z': z}))
+    equation = expr.evaluate_in(eq, context)
     assert equation.valid
     assert equation.lhs == x * (y * z)
     assert equation.rhs == (x * y) * z
@@ -121,7 +126,7 @@ def test_equality_algebra_symmetry():
 def test_equality_algebra_transitivity_valid():
     expr = EqTrans(Assoc(x * z, x, y), Assoc(x, z, x * y))
 
-    equation = MonoidEquation(expr.evaluate_in(eq, {'x': x, 'y': y, 'z': z}))
+    equation = expr.evaluate_in(eq, context)
     assert equation.valid
     assert equation.lhs == ((x * z) * x) * y
     assert equation.rhs == x * (z * (x * y))
@@ -129,13 +134,13 @@ def test_equality_algebra_transitivity_valid():
 def test_equality_algebra_transitivity_invalid():
     expr = EqTrans(Assoc(x, z, x * y), Assoc(x * z, x, y))
 
-    equation = MonoidEquation(expr.evaluate_in(eq, {'x': x, 'y': y, 'z': z}))
+    equation = expr.evaluate_in(eq, context)
     assert not equation.valid
 
 def test_equality_algebra_transitivity_of_reflexivity_valid():
     expr = EqTrans(x, x)
 
-    equation = MonoidEquation(expr.evaluate_in(eq, {'x': x, 'y': y, 'z': z}))
+    equation = expr.evaluate_in(eq, context)
     assert equation.valid
     assert equation.lhs == x
     assert equation.rhs == x
@@ -143,20 +148,31 @@ def test_equality_algebra_transitivity_of_reflexivity_valid():
 def test_equality_algebra_transitivity_of_reflexivity_invalid():
     expr = EqTrans(x, y)
 
-    equation = MonoidEquation(expr.evaluate_in(eq, {'x': x, 'y': y, 'z': z}))
+    equation = expr.evaluate_in(eq, context)
     assert not equation.valid
 
 def test_equality_algebra_transitivity_of_reflexivity_invalid_nested():
     exprs = [EqTrans(EqTrans(x, y), y), EqTrans(x, EqTrans(x, y))]
 
     for expr in exprs:
-        equation = MonoidEquation(expr.evaluate_in(eq, {'x': x, 'y': y, 'z': z}))
+        equation = expr.evaluate_in(eq, context)
+        assert not equation.valid
+
+def test_equality_algebra_associativity_of_invalid():
+    exprs = [
+        Assoc(EqTrans(x, y), y, z),
+        Assoc(x, EqTrans(y, z), z),
+        Assoc(x, y, EqTrans(z, x))
+    ]
+
+    for expr in exprs:
+        equation = expr.evaluate_in(eq, context)
         assert not equation.valid
 
 def test_equality_algebra_symmetry_of_reflexivity():
     expr = EqSymm(x)
 
-    equation = MonoidEquation(expr.evaluate_in(eq, {'x': x, 'y': y, 'z': z}))
+    equation = expr.evaluate_in(eq, context)
     assert equation.valid
     assert equation.lhs == x
     assert equation.rhs == x
@@ -164,9 +180,10 @@ def test_equality_algebra_symmetry_of_reflexivity():
 def test_equality_algebra_symmetry_of_invalid():
     expr = EqSymm(EqTrans(x, y))
 
-    equation = MonoidEquation(expr.evaluate_in(eq, {'x': x, 'y': y, 'z': z}))
+    equation = expr.evaluate_in(eq, context)
     assert not equation.valid
 
+@pytest.mark.skip("This test is obsolete")
 def test_invalid_equation_on_rhs():
     good_equation = MonoidEquation(x, x, True)
     bad_equation = MonoidEquation(x, y, False)

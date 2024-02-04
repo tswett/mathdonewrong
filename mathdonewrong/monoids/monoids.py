@@ -12,7 +12,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from functools import reduce
 import inspect
-from typing import Any, Callable, TypeVar
+from typing import Any, Callable, TypeVar, Union
 from mathdonewrong.algebras import Algebra, implement
 
 from mathdonewrong.expressions import Expression, Literal, NamedOper, Var
@@ -137,45 +137,47 @@ class MonoidEquation:
     rhs: MonoidExpr
     valid: bool
 
-    def __init__(self, lhs: MonoidExpr, rhs: MonoidExpr = None, valid: bool = None):
-        rhs = rhs or lhs
-        valid = valid if valid is not None else True
-
-        if isinstance(lhs, MonoidEquation):
-            valid = valid and lhs.valid
-            lhs = lhs.lhs
-        if isinstance(rhs, MonoidEquation):
-            valid = valid and rhs.valid
-            rhs = rhs.rhs
-
-        self.lhs = lhs
-        self.rhs = rhs
-        self.valid = valid
+    @staticmethod
+    def id() -> MonoidEquation:
+        return MonoidEquation.refl(Id())
 
     def __mul__(self, other: MonoidEquation) -> MonoidEquation:
-        return MonoidEquation(self.lhs * other.lhs, self.rhs * other.rhs, self.valid and other.valid)
+        return MonoidEquation(
+            self.lhs * other.lhs,
+            self.rhs * other.rhs,
+            self.valid and other.valid)
 
-EquationOrVar = MonoidEquation | MonVar
+    def assoc(self, b: MonoidEquation, c: MonoidEquation) -> MonoidEquation:
+        return MonoidEquation(
+            ((self * b) * c).lhs,
+            (self * (b * c)).rhs,
+            valid=self.valid and b.valid and c.valid)
+
+    @staticmethod
+    def refl(a: MonoidExpr) -> MonoidEquation:
+        return MonoidEquation(a, a, valid=True)
+
+    def symm(self) -> MonoidEquation:
+        return MonoidEquation(self.rhs, self.lhs, self.valid)
+
+    def trans(self, other: MonoidEquation) -> MonoidEquation:
+        valid = self.valid and other.valid and self.rhs == other.lhs
+        return MonoidEquation(self.lhs, other.rhs, valid)
 
 class MonoidEqualityAlgebra(Monoid):
     T = MonoidEquation
 
     def id_(self) -> MonoidEquation:
-        return MonoidEquation(Id())
+        return MonoidEquation.id()
 
-    def oper_(self, a: EquationOrVar, b: EquationOrVar) -> MonoidEquation:
-        a, b = MonoidEquation(a), MonoidEquation(b)
+    def oper_(self, a: MonoidEquation, b: MonoidEquation) -> MonoidEquation:
         return a * b
 
-    def assoc(self, a: EquationOrVar, b: EquationOrVar, c: EquationOrVar) -> MonoidEquation:
-        a, b, c = MonoidEquation(a), MonoidEquation(b), MonoidEquation(c)
-        return MonoidEquation((a * b) * c, a * (b * c))
+    def assoc(self, a: MonoidEquation, b: MonoidEquation, c: MonoidEquation) -> MonoidEquation:
+        return a.assoc(b, c)
 
-    def eq_symm(self, a: EquationOrVar) -> MonoidEquation:
-        a = MonoidEquation(a)
-        return MonoidEquation(a.rhs, a.lhs, a.valid)
+    def eq_symm(self, a: MonoidEquation) -> MonoidEquation:
+        return a.symm()
 
-    def eq_trans(self, a: EquationOrVar, b: EquationOrVar) -> MonoidEquation:
-        a, b = MonoidEquation(a), MonoidEquation(b)
-        valid = a.valid and b.valid and a.rhs == b.lhs
-        return MonoidEquation(a.lhs, b.rhs, valid)
+    def eq_trans(self, a: MonoidEquation, b: MonoidEquation) -> MonoidEquation:
+        return a.trans(b)
