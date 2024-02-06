@@ -10,7 +10,7 @@
 
 import pytest
 
-from mathdonewrong.algebras import Algebra, attr_name_to_operator_name, operator, relation
+from mathdonewrong.algebras import Algebra, attr_name_to_oper_name, operator, relation
 from mathdonewrong.expressions import NamedOper, Var
 
 
@@ -18,7 +18,7 @@ from mathdonewrong.expressions import NamedOper, Var
 # Little tests
 
 def test_funcname_to_operator_name():
-    assert attr_name_to_operator_name('my_favorite_operator') == 'MyFavoriteOperator'
+    assert attr_name_to_oper_name('my_favorite_operator') == 'MyFavoriteOperator'
 
 
 
@@ -33,7 +33,7 @@ class TestMagma(Algebra):
         raise NotImplementedError
 
 def test_subclassing_Algebra_does_not_alter_it():
-    assert Algebra.operators == {}
+    assert Algebra.members == {}
 
 class TestMagmaNewAttrName_2(TestMagma):
     @operator('Mult')
@@ -41,8 +41,8 @@ class TestMagmaNewAttrName_2(TestMagma):
         return x * y
 
 def test_subclass_can_override_operator_attr_name():
-    member = TestMagmaNewAttrName_2.operators['Mult'] 
-    assert member == 'mult2'
+    member = TestMagmaNewAttrName_2.members['Mult'] 
+    assert member.attr_name == 'mult2'
 
 class TestMagmaDifferentAttrName(Algebra):
     @operator('Mult')
@@ -62,8 +62,8 @@ class TestMagmaInheritMultipleAttrNames(TestMagmaNewAttrName_3, TestMagmaNewAttr
     pass
 
 def test_multiple_attr_names_inherit_correctly():
-    member = TestMagmaInheritMultipleAttrNames.operators['Mult']
-    assert member == 'mult3'
+    member = TestMagmaInheritMultipleAttrNames.members['Mult']
+    assert member.attr_name == 'mult3'
 
 
 
