@@ -13,8 +13,16 @@ import pytest
 from mathdonewrong.algebras import Algebra, attr_name_to_operator_name, operator, relation
 from mathdonewrong.expressions import NamedOper, Var
 
+
+
+# Little tests
+
 def test_funcname_to_operator_name():
     assert attr_name_to_operator_name('my_favorite_operator') == 'MyFavoriteOperator'
+
+
+
+# Test the basic functionality of Algebra, as far as operators go
 
 class Mult(NamedOper):
     pass
@@ -24,20 +32,47 @@ class TestMagma(Algebra):
     def mult(self, x, y):
         raise NotImplementedError
 
-def test_magma_variety():
-    oper, = TestMagma.variety.operators
-    assert oper.name == 'Mult'
-
 def test_subclassing_Algebra_does_not_alter_it():
     assert Algebra.operators == {}
 
-class TestMagmaNewAttrName(TestMagma):
+class TestMagmaNewAttrName_2(TestMagma):
     @operator('Mult')
     def mult2(self, x, y):
         return x * y
 
 def test_subclass_can_override_operator_attr_name():
-    assert TestMagmaNewAttrName.operators['Mult'] == 'mult2'
+    member = TestMagmaNewAttrName_2.operators['Mult'] 
+    assert member == 'mult2'
+
+class TestMagmaDifferentAttrName(Algebra):
+    @operator('Mult')
+    def multiply(self, x, y):
+        return x * y
+
+def test_can_invoke_operator_by_name():
+    magma = TestMagmaDifferentAttrName()
+    assert magma.operate('Mult', (3, 5)) == 15
+
+class TestMagmaNewAttrName_3(TestMagma):
+    @operator('Mult')
+    def mult3(self, x, y):
+        return x + y
+
+class TestMagmaInheritMultipleAttrNames(TestMagmaNewAttrName_3, TestMagmaNewAttrName_2):
+    pass
+
+def test_multiple_attr_names_inherit_correctly():
+    member = TestMagmaInheritMultipleAttrNames.operators['Mult']
+    assert member == 'mult3'
+
+
+
+# Test automatic Variety synthesis
+
+@pytest.mark.skip("not implemented yet")
+def test_magma_variety():
+    oper, = TestMagma.variety.operators
+    assert oper.name == 'Mult'
 
 class TestSemigroup(TestMagma):
     @relation()
@@ -48,6 +83,11 @@ class TestSemigroup(TestMagma):
         return self.mult(x, self.mult(y, z))
 
 x, y, z = Var('x'), Var('y'), Var('z')
+
+@pytest.mark.skip("not implemented yet")
+def test_semigroup_algebra_info():
+    rel, = TestSemigroup.relations.values()
+    assert rel.name == 'Assoc'
 
 @pytest.mark.skip("not implemented yet")
 def test_semigroup_variety():

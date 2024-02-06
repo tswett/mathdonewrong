@@ -17,17 +17,15 @@ from mathdonewrong.varieties import Variety
 class AlgebraClass(type):
     operators: dict[str, Callable]
 
-    def __new__(cls, name, bases, attrs):
+    @staticmethod
+    def __prepare__(name, bases):
         operator_dict = {}
-        attrs['operators'] = operator_dict
 
-        for base in bases:
+        for base in bases[::-1]:
             if hasattr(base, 'operators'):
                 operator_dict.update(base.operators)
 
-        newclass = super().__new__(cls, name, bases, attrs)
-
-        return newclass
+        return {'operators': operator_dict}
 
     def __init__(cls, name, bases, attrs):
         cls.variety = Variety()
