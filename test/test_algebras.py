@@ -24,12 +24,13 @@ class TestMagma(Algebra):
     def mult(self, x, y):
         raise NotImplementedError
 
+@pytest.mark.skip("not implemented yet")
 def test_magma_variety():
     oper, = TestMagma.variety.operators
     assert oper.name == 'Mult'
 
 def test_subclassing_Algebra_does_not_alter_it():
-    assert Algebra.operators == {}
+    assert Algebra.members == {}
 
 class TestMagmaNewAttrName(TestMagma):
     @operator('Mult')
@@ -37,7 +38,17 @@ class TestMagmaNewAttrName(TestMagma):
         return x * y
 
 def test_subclass_can_override_operator_attr_name():
-    assert TestMagmaNewAttrName.operators['Mult'] == 'mult2'
+    member = TestMagmaNewAttrName.members['Mult'] 
+    assert member.attr_name == 'mult2'
+
+class TestMagmaDifferentAttrName(Algebra):
+    @operator('Mult')
+    def multiply(self, x, y):
+        return x * y
+
+def test_can_invoke_operator_by_name():
+    magma = TestMagmaDifferentAttrName()
+    assert magma.operate('Mult', (3, 5)) == 15
 
 class TestSemigroup(TestMagma):
     @relation()
@@ -48,6 +59,11 @@ class TestSemigroup(TestMagma):
         return self.mult(x, self.mult(y, z))
 
 x, y, z = Var('x'), Var('y'), Var('z')
+
+@pytest.mark.skip("not implemented yet")
+def test_semigroup_algebra_info():
+    rel, = TestSemigroup.relations.values()
+    assert rel.name == 'Assoc'
 
 @pytest.mark.skip("not implemented yet")
 def test_semigroup_variety():

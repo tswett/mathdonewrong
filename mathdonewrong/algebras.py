@@ -8,83 +8,76 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
+from __future__ import annotations
 from dataclasses import dataclass
-from typing import Callable
+import re
+from typing import Callable, Optional
 
 import mathdonewrong.varieties as vty
 from mathdonewrong.varieties import Variety
 
+def attr_name_to_operator_name(attr_name):
+    return attr_name.title().replace('_', '')
+
+def operator_name_to_attr_name(operator_name):
+    words = re.split('(?<=.)(?=[A-Z])', operator_name)
+    return '_'.join(words).lower()
+
 class AlgebraClass(type):
-    operators: dict[str, Callable]
+    members: dict[str, AlgebraMember]
 
-    def __new__(cls, name, bases, attrs):
-        operator_dict = {}
-        attrs['operators'] = operator_dict
-
-        for base in bases:
-            if hasattr(base, 'operators'):
-                operator_dict.update(base.operators)
-
-        newclass = super().__new__(cls, name, bases, attrs)
-
-        return newclass
-
-    def __init__(cls, name, bases, attrs):
-        cls.variety = Variety()
-        for key in cls.operators:
-            cls.variety.operators.append(vty.Operator(key))
-
-def funcname(operator_name):
-    with_underscores = operator_name[0] + ''.join('_' + c if c.isupper() else c for c in operator_name[1:])
-    return with_underscores.lower()
-
-def attr_name_to_operator_name(funcname):
-    next_uppercase = True
-    result = ''
-
-    for c in funcname:
-        if c == '_':
-            next_uppercase = True
-            continue
-
-        if next_uppercase and c.isalpha():
-            c = c.upper()
-            next_uppercase = False
-
-        result += c
-
-    return result
+    @classmethod
+    def __prepare__(metacls, name, bases):
+        return { 'members': {} }
 
 class Algebra(metaclass=AlgebraClass):
-    def operate(self, operator, operands):
-        if operator in type(self).operators:
-            return getattr(self, type(self).operators[operator])(*operands)
-        elif hasattr(self, funcname(operator)):
-            return getattr(self, funcname(operator))(*operands)
-        else:
-            raise NotImplementedError(f'operator {operator} not implemented in {self}')
+    def operate(self, oper_name, operands):
+        operator = self.get_operator(oper_name)
 
-@dataclass
-class Operator:
+        if operator is None:
+            raise NotImplementedError(f'operator {oper_name} not implemented in {self}')
+
+        return operator(*operands)
+
+    def get_operator(self, oper_name):
+        if oper_name in self.members:
+            attr_name = self.members[oper_name].attr_name
+        else:
+            attr_name = operator_name_to_attr_name(oper_name)
+
+        operator = getattr(self, attr_name)
+
+        return operator
+
+class AlgebraMember:
     name: str
     func: Callable
+    attr_name: Optional[str]
+
+    def __init__(self, name, func):
+        # TODO: set name automatically if it's None
+        self.name = name
+        self.func = func
+        self.attr_name = None
 
     def __set_name__(self, owner, attr_name):
-        # TODO: we eventually want to store the Operator object here, not just
-        # the attribute name
-        if self.name is None:
-            self.name = attr_name_to_operator_name(attr_name)
-        owner.operators[self.name] = attr_name
-        setattr(owner, attr_name, self.func)
+        self.attr_name = attr_name
+        owner.members[self.name] = self
+
+    def __get__(self, obj):
+        raise NotImplementedError
+
+class OperatorMember(AlgebraMember):
+    pass
 
 def operator(name=None):
     def operator_decorator(func):
-        return Operator(name, func)
+        return OperatorMember(name, func)
 
     return operator_decorator
 
 def relation():
-    def decorator(func):
-        pass
+    def relation_decorator(func):
+        return func
 
-    return decorator
+    return relation_decorator
