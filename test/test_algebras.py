@@ -10,19 +10,53 @@
 
 import pytest
 
-from mathdonewrong.algebras import Algebra, attr_name_to_operator_name, operator
+from mathdonewrong.algebras import Algebra, attr_name_to_operator_name, operator, relation
+from mathdonewrong.expressions import NamedOper, Var
 
 def test_funcname_to_operator_name():
     assert attr_name_to_operator_name('my_favorite_operator') == 'MyFavoriteOperator'
+
+class Mult(NamedOper):
+    pass
 
 class TestMagma(Algebra):
     @operator()
     def mult(self, x, y):
         raise NotImplementedError
 
-def test_magma_variety_operators():
+def test_magma_variety():
     oper, = TestMagma.variety.operators
     assert oper.name == 'Mult'
+
+def test_subclassing_Algebra_does_not_alter_it():
+    assert Algebra.operators == {}
+
+class TestMagmaNewAttrName(TestMagma):
+    @operator('Mult')
+    def mult2(self, x, y):
+        return x * y
+
+def test_subclass_can_override_operator_attr_name():
+    assert TestMagmaNewAttrName.operators['Mult'] == 'mult2'
+
+class TestSemigroup(TestMagma):
+    @relation()
+    def assoc(self, x, y, z):
+        return self.mult(self.mult(x, y), z)
+
+    def assoc_rhs(self, x, y, z):
+        return self.mult(x, self.mult(y, z))
+
+x, y, z = Var('x'), Var('y'), Var('z')
+
+@pytest.mark.skip("not implemented yet")
+def test_semigroup_variety():
+    oper, = TestSemigroup.variety.operators
+    assert oper.name == 'Mult'
+
+    rel, = TestSemigroup.variety.relations
+    assert rel.lhs == Mult(Mult(x, y), z)
+    assert rel.rhs == Mult(x, Mult(y, z))
 
 if __name__ == '__main__':
     pytest.main([__file__])

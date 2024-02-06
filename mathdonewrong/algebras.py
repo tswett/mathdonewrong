@@ -18,13 +18,14 @@ class AlgebraClass(type):
     operators: dict[str, Callable]
 
     def __new__(cls, name, bases, attrs):
-        newclass = super().__new__(cls, name, bases, attrs)
-
-        newclass.operators = {}
+        operator_dict = {}
+        attrs['operators'] = operator_dict
 
         for base in bases:
             if hasattr(base, 'operators'):
-                newclass.operators.update(base.operators)
+                operator_dict.update(base.operators)
+
+        newclass = super().__new__(cls, name, bases, attrs)
 
         return newclass
 
@@ -81,3 +82,9 @@ def operator(name=None):
         return Operator(name, func)
 
     return operator_decorator
+
+def relation():
+    def decorator(func):
+        pass
+
+    return decorator

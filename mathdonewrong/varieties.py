@@ -14,8 +14,13 @@ from dataclasses import dataclass
 class Operator:
     name: str
 
+class Relation:
+    pass
+
 class Variety:
     operators: list[Operator]
+    relations: list[Relation]
 
     def __init__(self):
         self.operators = []
+        self.relations = []
