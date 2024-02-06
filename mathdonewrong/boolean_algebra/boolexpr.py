@@ -8,7 +8,7 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
-from mathdonewrong.algebras import Algebra, implement
+from mathdonewrong.algebras import Algebra, operator
 import mathdonewrong.expressions as ex
 
 class BoolExpr(ex.Expression):
@@ -53,23 +53,23 @@ class Not(BoolExpr, ex.PrefixOper):
     precedence = 80
 
 class BooleanAlgebra(Algebra):
-    @implement('True')
+    @operator('True')
     def true(self):
         raise NotImplementedError
 
-    @implement('False')
+    @operator('False')
     def false(self):
         raise NotImplementedError
 
-    @implement('&')
+    @operator('&')
     def and_(self, left, right):
         raise NotImplementedError
 
-    @implement('|')
+    @operator('|')
     def or_(self, left, right):
         raise NotImplementedError
 
-    @implement('~')
+    @operator('~')
     def not_(self, operand):
         raise NotImplementedError
 

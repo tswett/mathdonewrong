@@ -183,13 +183,5 @@ def test_equality_algebra_symmetry_of_invalid():
     equation = expr.evaluate_in(eq, context)
     assert not equation.valid
 
-@pytest.mark.skip("This test is obsolete")
-def test_invalid_equation_on_rhs():
-    good_equation = MonoidEquation(x, x, True)
-    bad_equation = MonoidEquation(x, y, False)
-
-    composed = MonoidEquation(good_equation, bad_equation)
-    assert not composed.valid
-
 if __name__ == '__main__':
     pytest.main([__file__])

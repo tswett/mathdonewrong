@@ -8,7 +8,11 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
+from dataclasses import dataclass
 from typing import Callable
+
+import mathdonewrong.varieties as vty
+from mathdonewrong.varieties import Variety
 
 class AlgebraClass(type):
     operators: dict[str, Callable]
@@ -24,9 +28,31 @@ class AlgebraClass(type):
 
         return newclass
 
+    def __init__(cls, name, bases, attrs):
+        cls.variety = Variety()
+        for key in cls.operators:
+            cls.variety.operators.append(vty.Operator(key))
+
 def funcname(operator_name):
     with_underscores = operator_name[0] + ''.join('_' + c if c.isupper() else c for c in operator_name[1:])
     return with_underscores.lower()
+
+def attr_name_to_operator_name(funcname):
+    next_uppercase = True
+    result = ''
+
+    for c in funcname:
+        if c == '_':
+            next_uppercase = True
+            continue
+
+        if next_uppercase and c.isalpha():
+            c = c.upper()
+            next_uppercase = False
+
+        result += c
+
+    return result
 
 class Algebra(metaclass=AlgebraClass):
     def operate(self, operator, operands):
@@ -37,13 +63,21 @@ class Algebra(metaclass=AlgebraClass):
         else:
             raise NotImplementedError(f'operator {operator} not implemented in {self}')
 
-def implement(name):
-    class ImplementDecorator:
-        def __init__(self, func):
-            self.func = func
+@dataclass
+class Operator:
+    name: str
+    func: Callable
 
-        def __set_name__(self, owner, attr_name):
-            owner.operators[name] = attr_name
-            setattr(owner, attr_name, self.func)
+    def __set_name__(self, owner, attr_name):
+        # TODO: we eventually want to store the Operator object here, not just
+        # the attribute name
+        if self.name is None:
+            self.name = attr_name_to_operator_name(attr_name)
+        owner.operators[self.name] = attr_name
+        setattr(owner, attr_name, self.func)
 
-    return ImplementDecorator
+def operator(name=None):
+    def operator_decorator(func):
+        return Operator(name, func)
+
+    return operator_decorator

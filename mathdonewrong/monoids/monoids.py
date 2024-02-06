@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from functools import reduce
 import inspect
 from typing import Any, Callable, TypeVar, Union
-from mathdonewrong.algebras import Algebra, implement
+from mathdonewrong.algebras import Algebra, operator
 
 from mathdonewrong.expressions import Expression, Literal, NamedOper, Var
 
@@ -44,11 +44,11 @@ class Monoid(Algebra):
     def id(self) -> T:
         return self.id_()
 
-    @implement('Id')
+    @operator('Id')
     def id_(self) -> T:
         raise NotImplementedError
 
-    @implement('MonOper')
+    @operator('MonOper')
     def oper_(self, a: T, b: T) -> T:
         raise NotImplementedError
 
