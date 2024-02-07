@@ -10,12 +10,16 @@
 
 from dataclasses import dataclass
 
+from mathdonewrong.expressions import Expression
+
 @dataclass
 class Operator:
     name: str
 
+@dataclass
 class Relation:
-    pass
+    lhs: Expression
+    rhs: Expression
 
 class Variety:
     operators: list[Operator]

@@ -90,7 +90,6 @@ def test_semigroup_algebra_info():
 
     assert member1.name == 'Assoc'
 
-@pytest.mark.skip("not implemented yet")
 def test_extract_expr():
     assoc_expr = TestSemigroup.extract_expr('assoc')
     assert assoc_expr.is_equiv(Mult(Mult(x, y), z))
@@ -98,14 +97,13 @@ def test_extract_expr():
     assoc_rhs_expr = TestSemigroup.extract_expr('assoc_rhs')
     assert assoc_rhs_expr.is_equiv(Mult(x, Mult(y, z)))
 
-@pytest.mark.skip("not implemented yet")
 def test_semigroup_variety():
     oper, = TestSemigroup.variety.operators
     assert oper.name == 'Mult'
 
     rel, = TestSemigroup.variety.relations
-    assert rel.lhs == Mult(Mult(x, y), z)
-    assert rel.rhs == Mult(x, Mult(y, z))
+    assert rel.lhs.is_equiv(Mult(Mult(x, y), z))
+    assert rel.rhs.is_equiv(Mult(x, Mult(y, z)))
 
 if __name__ == '__main__':
     pytest.main([__file__])

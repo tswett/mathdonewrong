@@ -10,11 +10,11 @@
 
 from __future__ import annotations
 from dataclasses import dataclass
+import inspect
+import textwrap
 from typing import Callable
 
-from mathdonewrong.expressions import Var
-import mathdonewrong.varieties as vty
-from mathdonewrong.varieties import Variety
+from mathdonewrong.varieties import Operator, Relation, Variety
 
 class AlgebraClass(type):
     operators: dict[str, AlgebraMember]
@@ -30,12 +30,30 @@ class AlgebraClass(type):
         return {'members': member_dict}
 
     def __init__(cls, name, bases, attrs):
-        cls.variety = Variety()
-        for key in cls.members:
-            cls.variety.operators.append(vty.Operator(key))
+        cls._variety = None
 
     def extract_expr(cls, attr_name):
-        return Var('x')
+        from mathdonewrong.python_exprs.depythonize import depythonize
+
+        source = textwrap.dedent(inspect.getsource(getattr(cls, attr_name)))
+        return depythonize(source)
+
+    @property
+    def variety(cls):
+        if cls._variety is None:
+            cls._variety = variety = Variety()
+
+            for member in cls.members.values():
+                if isinstance(member, AlgebraOperator):
+                    operator = Operator(member.name)
+                    variety.operators.append(operator)
+                elif isinstance(member, AlgebraRelation):
+                    lhs = cls.extract_expr(member.attr_name)
+                    rhs = cls.extract_expr(member.attr_name + '_rhs')
+                    relation = Relation(lhs, rhs)
+                    variety.relations.append(relation)
+
+        return cls._variety
 
 def oper_name_to_attr_name(oper_name):
     with_underscores = oper_name[0] + ''.join('_' + c if c.isupper() else c for c in oper_name[1:])
