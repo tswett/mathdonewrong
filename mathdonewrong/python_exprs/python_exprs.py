@@ -26,8 +26,8 @@ def PyNameL(name):
 class PyAttr(PythonExpr, NamedOper):
     pass
 
-def PyAttrL(target, name):
-    return PyAttr(target, Literal(name))
+def PyAttrL(target, attr_name):
+    return PyAttr(target, Literal(attr_name))
 
 class PyCall(PythonExpr, NamedOper):
     pass
@@ -36,7 +36,7 @@ class PyArgs(PythonExpr, NamedOper):
     pass
 
 def PyCallL(target, *args):
-    return PyCall(target, PyArgs(args))
+    return PyCall(target, PyArgs(*args))
 
 class PyReturn(PythonExpr, NamedOper):
     pass

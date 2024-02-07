@@ -10,6 +10,8 @@
 
 import textwrap
 import pytest
+from mathdonewrong.expressions import Oper, Var
+from mathdonewrong.python_exprs.depythonize import depythonize
 
 from mathdonewrong.python_exprs.python_exprs import PyAttrL, PyBlock, PyCallL, PyFunctionDefL, PyNameL, PyReturn, source_expr_to_expr, source_block_to_expr
 
@@ -66,6 +68,10 @@ def test_parse_a_relation_def():
                         PyNameL('x'),
                         PyNameL('y')),
                     PyNameL('z')))]))
+
+def test_depythonize():
+    expr = Oper('Mult', (Oper('Mult', (Var('x'), Var('y'))), Var('z')))
+    assert depythonize(relation_def).is_equiv(expr)
 
 if __name__ == '__main__':
     pytest.main([__file__])

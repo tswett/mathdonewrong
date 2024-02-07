@@ -51,7 +51,7 @@ class Algebra(metaclass=AlgebraClass):
         elif (operator := getattr(self, oper_name_to_attr_name(operator_name), None)) is not None:
             pass
         else:
-            raise NotImplementedError(f"operator {operator} not implemented in {self}")
+            raise NotImplementedError(f"operator {operator_name} not implemented in {self}")
 
         return operator(*operands)
 
