@@ -8,47 +8,46 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
-from mathdonewrong.expressions import Literal, Oper, Var
+import pytest
+from mathdonewrong.expressions import Expression, Literal, Oper, Var
 
 class MyVar(Var):
+    pass
+
+class MyLiteral(Literal):
     pass
 
 class MyOperX(Oper):
     def __init__(self, *operands):
         super().__init__('x', operands)
 
-def test_different_variables_not_equivalent():
-    assert not Var('x').is_equiv(Var('y'))
+class BadExpression(Expression):
+    @property
+    def tag(self):
+        return 'bad'
+
+def test_from_expr():
+    assert Expression.from_expr(Var('x')) == Var('x')
+    assert Expression.from_expr(MyVar('y')) == Var('y')
+
+    assert Expression.from_expr(Literal(1)) == Literal(1)
+    assert Expression.from_expr(MyLiteral(2)) == Literal(2)
+
+    assert Expression.from_expr(Oper('x', ())) == Oper('x', ())
+    assert Expression.from_expr(Oper('y', ())) == Oper('y', ())
+    assert Expression.from_expr(MyOperX()) == Oper('x', ())
+
+    assert Expression.from_expr(Oper('x', (MyVar('y'),))) == Oper('x', (Var('y'),))
+
+    with pytest.raises(ValueError):
+        Expression.from_expr(BadExpression())
 
 def test_identical_variables_are_equivalent():
     assert Var('x').is_equiv(Var('x'))
 
+def test_different_variables_not_equivalent():
+    assert not Var('x').is_equiv(Var('y'))
+
 def test_subclass_variable_is_equivalent():
     assert MyVar('x').is_equiv(Var('x'))
-
-def test_variable_not_equivalent_to_operator():
-    assert not Var('x').is_equiv(Oper('x', ()))
-
-def test_identical_opers_are_equivalent():
-    assert Oper('x', ()).is_equiv(Oper('x', ()))
-
-def test_different_opers_not_equivalent():
-    assert not Oper('x', ()).is_equiv(Oper('y', ()))
-
-def test_subclass_oper_is_equivalent():
-    assert MyOperX().is_equiv(Oper('x', ()))
-
-def test_operator_not_equivalent_to_variable():
-    assert not Oper('x', ()).is_equiv(Var('x'))
-
-def test_operator_different_operands_not_equivalent():
-    assert not Oper('x', (Var('y'),)).is_equiv(Oper('x', (Var('z'),)))
-
-def test_operator_subclass_operand_is_equivalent():
-    assert Oper('x', (MyVar('y'),)).is_equiv(Oper('x', (Var('y'),)))
-
-def test_operator_different_operand_counts_not_equivalent():
-    assert not Oper('x', ()).is_equiv(Oper('x', (Var('y'),)))
-
-def test_different_literals_not_equivalent():
-    assert not Literal(1).is_equiv(Literal(2))
+    assert Var('x').is_equiv(MyVar('x'))

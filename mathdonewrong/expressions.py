@@ -45,12 +45,20 @@ class Expression:
     def traverse(self, visitor):
         raise NotImplementedError
 
-    def is_equiv(self, other):
-        raise NotImplementedError
+    @staticmethod
+    def from_expr(other):
+        if other.tag == 'var':
+            return Var(other.name)
+        elif other.tag == 'literal':
+            return Literal(other.value)
+        elif other.tag == 'oper':
+            new_operands = tuple(Expression.from_expr(operand) for operand in other.operands)
+            return Oper(other.name, new_operands)
+        else:
+            raise ValueError(f"Expression tag not recognized: '{other.tag}'")
 
-    @property
-    def tag(self):
-        raise NotImplementedError
+    def is_equiv(self, other):
+        return Expression.from_expr(self) == Expression.from_expr(other)
 
 @dataclass
 class Var(Expression):
@@ -67,9 +75,6 @@ class Var(Expression):
 
     def traverse(self, visitor):
         return visitor.visit_var(self)
-
-    def is_equiv(self, other):
-        return other.tag == 'var' and self.name == other.name
 
     @property
     def tag(self):
@@ -91,9 +96,9 @@ class Literal(Expression):
     def traverse(self, visitor):
         return visitor.visit_literal(self)
 
-    def is_equiv(self, other):
-        # TODO: finish implementing this
-        return False
+    @property
+    def tag(self):
+        return 'literal'
 
 @dataclass
 class Oper(Expression):
@@ -117,12 +122,6 @@ class Oper(Expression):
 
     def repr_like_named_oper(self):
         return f'{type(self).__name__}({", ".join(repr(operand) for operand in self.operands)})'
-
-    def is_equiv(self, other):
-        if not (other.tag == 'oper' and self.name == other.name and len(self.operands) == len(other.operands)):
-            return False
-
-        return all(self.operands[i].is_equiv(other.operands[i]) for i in range(len(self.operands)))
 
     @property
     def tag(self):
