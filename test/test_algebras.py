@@ -69,7 +69,6 @@ def test_multiple_attr_names_inherit_correctly():
 
 # Test automatic Variety synthesis
 
-@pytest.mark.skip("not implemented yet")
 def test_magma_variety():
     oper, = TestMagma.variety.operators
     assert oper.name == 'Mult'
@@ -84,10 +83,20 @@ class TestSemigroup(TestMagma):
 
 x, y, z = Var('x'), Var('y'), Var('z')
 
-@pytest.mark.skip("not implemented yet")
 def test_semigroup_algebra_info():
-    rel, = TestSemigroup.relations.values()
-    assert rel.name == 'Assoc'
+    member0, member1 = TestSemigroup.members.values()
+
+    assert member0.name == 'Mult'
+
+    assert member1.name == 'Assoc'
+
+@pytest.mark.skip("not implemented yet")
+def test_extract_expr():
+    assoc_expr = TestSemigroup.extract_expr('assoc')
+    assert assoc_expr.is_equiv(Mult(Mult(x, y), z))
+
+    assoc_rhs_expr = TestSemigroup.extract_expr('assoc_rhs')
+    assert assoc_rhs_expr.is_equiv(Mult(x, Mult(y, z)))
 
 @pytest.mark.skip("not implemented yet")
 def test_semigroup_variety():

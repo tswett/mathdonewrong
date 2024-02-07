@@ -12,6 +12,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable
 
+from mathdonewrong.expressions import Var
 import mathdonewrong.varieties as vty
 from mathdonewrong.varieties import Variety
 
@@ -33,6 +34,9 @@ class AlgebraClass(type):
         for key in cls.members:
             cls.variety.operators.append(vty.Operator(key))
 
+    def extract_expr(cls, attr_name):
+        return Var('x')
+
 def oper_name_to_attr_name(oper_name):
     with_underscores = oper_name[0] + ''.join('_' + c if c.isupper() else c for c in oper_name[1:])
     return with_underscores.lower()
@@ -51,11 +55,8 @@ class Algebra(metaclass=AlgebraClass):
 
         return operator(*operands)
 
-class AlgebraMember:
-    pass
-
 @dataclass
-class AlgebraOperator(AlgebraMember):
+class AlgebraMember:
     name: str
     attr_name: str
     func: Callable
@@ -70,14 +71,20 @@ class AlgebraOperator(AlgebraMember):
 
         setattr(owner, attr_name, self.func)
 
+class AlgebraOperator(AlgebraMember):
+    pass
+
+class AlgebraRelation(AlgebraMember):
+    pass
+
 def operator(name=None):
     def operator_decorator(func):
         return AlgebraOperator(name, None, func)
 
     return operator_decorator
 
-def relation():
+def relation(name=None):
     def decorator(func):
-        pass
+        return AlgebraRelation(name, None, func)
 
     return decorator
