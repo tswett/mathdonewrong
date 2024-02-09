@@ -77,6 +77,9 @@ class FunctionDef:
     args: list
     body: list
 
+# TODO: Defining depythonize as an algebra is probably a bad idea, because
+# depythonize gets used when we're defining algebra classes. It would probably
+# be just as easy to just define it as a NodeVisitor.
 def depythonize(source_block: str) -> Expression:
     expr = source_block_to_expr(source_block)
     destructed_block = expr.evaluate_in(DepythonAlgebra(), {})
