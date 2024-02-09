@@ -10,7 +10,61 @@
 
 import pytest
 from mathdonewrong.equality.equality_exprs import EqSymm, EqTrans
-from mathdonewrong.monoids.monoids import Assoc, Id, MonLiteral, MonOper, MonVar, MonoidEqualityAlgebra, MonoidEquation, MonoidHomomorphism, int_addition, int_multiplication, int_scale, string_monoid, tuple_monoid
+from mathdonewrong.monoids.monoids import Assoc, Id, MonLiteral, MonOper, MonVar, Monoid, MonoidEqualityAlgebra, MonoidEquation, MonoidHomomorphism, int_addition, int_multiplication, int_scale, string_monoid, tuple_monoid
+from mathdonewrong.varieties import Operator, Relation
+
+
+
+# Test various monoid machinery
+
+def test_MonOper_requires_two_operands():
+    with pytest.raises(TypeError):
+        MonOper(1)
+    with pytest.raises(TypeError):
+        MonOper(1, 2, 3)
+
+def test_a_homomorphism():
+    @MonoidHomomorphism
+    def int_to_unary(x: int_addition) -> string_monoid:
+        return '.' * x
+
+    assert int_to_unary.domain == int_addition
+    assert int_to_unary.codomain == string_monoid
+
+    assert int_to_unary(6) == '......'
+
+def test_int_scale_homomorphism():
+    for x in [1, 5, 0, -1]:
+        hom = int_scale(x)
+
+        assert hom.domain == int_addition
+        assert hom.codomain == int_addition
+
+        for y in [1, 5, 0, -1]:
+            assert hom(y) == x * y
+
+def test_monoid_variety_is_correct():
+    x, y, z = MonVar('x'), MonVar('y'), MonVar('z')
+
+    vty = Monoid.variety
+
+    assert vty.operators == [
+        Operator('Id'),
+        Operator('MonOper'),
+    ]
+
+    assert len(vty.relations) == 3
+    # TODO: make "depythonize" get the correct operator names, then we can
+    # uncomment this
+    #assert vty.relations == [
+    #    Relation(Id() * x, x),
+    #    Relation(x * Id(), x),
+    #    Relation((x * y) * z, x * (y * z)),
+    #]
+
+
+
+# Test various particular monoids
 
 def test_int_addition():
     assert int_addition.oper() == 0
@@ -42,31 +96,9 @@ def test_evaluation():
     assert (L('boots') * L(' and') * L(' cats')).evaluate_in(string_monoid, {}) == 'boots and cats'
     assert (L((1, 'hello')) * L(()) * L(('world',))).evaluate_in(tuple_monoid, {}) == (1, 'hello', 'world')
 
-def test_MonOper_requires_two_operands():
-    with pytest.raises(TypeError):
-        MonOper(1)
-    with pytest.raises(TypeError):
-        MonOper(1, 2, 3)
 
-def test_a_homomorphism():
-    @MonoidHomomorphism
-    def int_to_unary(x: int_addition) -> string_monoid:
-        return '.' * x
 
-    assert int_to_unary.domain == int_addition
-    assert int_to_unary.codomain == string_monoid
-
-    assert int_to_unary(6) == '......'
-
-def test_int_scale_homomorphism():
-    for x in [1, 5, 0, -1]:
-        hom = int_scale(x)
-
-        assert hom.domain == int_addition
-        assert hom.codomain == int_addition
-
-        for y in [1, 5, 0, -1]:
-            assert hom(y) == x * y
+# Test the monoid equality algebra
 
 eq = MonoidEqualityAlgebra()
 x, y, z = MonVar('x'), MonVar('y'), MonVar('z')
@@ -182,6 +214,8 @@ def test_equality_algebra_symmetry_of_invalid():
 
     equation = expr.evaluate_in(eq, context)
     assert not equation.valid
+
+
 
 if __name__ == '__main__':
     pytest.main([__file__])

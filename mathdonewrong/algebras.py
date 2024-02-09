@@ -60,7 +60,7 @@ def oper_name_to_attr_name(oper_name):
     return with_underscores.lower()
 
 def attr_name_to_oper_name(attr_name):
-    return ''.join(word[0].upper() + word[1:] for word in attr_name.split('_'))
+    return ''.join(word[:1].upper() + word[1:] for word in attr_name.split('_'))
 
 class Algebra(metaclass=AlgebraClass):
     def operate(self, operator_name, operands):

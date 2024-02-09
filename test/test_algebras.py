@@ -17,8 +17,9 @@ from mathdonewrong.expressions import NamedOper, Var
 
 # Little tests
 
-def test_funcname_to_operator_name():
+def test_attr_name_to_oper_name():
     assert attr_name_to_oper_name('my_favorite_operator') == 'MyFavoriteOperator'
+    assert attr_name_to_oper_name('another_operator_') == 'AnotherOperator'
 
 
 

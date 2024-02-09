@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from functools import reduce
 import inspect
 from typing import Any, Callable, TypeVar, Union
-from mathdonewrong.algebras import Algebra, operator
+from mathdonewrong.algebras import Algebra, operator, relation
 
 from mathdonewrong.expressions import Expression, Literal, NamedOper, Var
 
@@ -56,6 +56,30 @@ class Monoid(Algebra):
         return reduce(self.oper_, args, self.id)
 
     # TODO: add methods for left and right identity and associativity
+
+    @relation()
+    def left_id(self, a: T):
+        return self.oper_(self.id_(), a)
+
+    def left_id_rhs(self, a: T):
+        return a
+
+    @relation()
+    def right_id(self, a: T):
+        return a
+        #return self.oper_(a, self.id_())
+
+    def right_id_rhs(self, a: T):
+        return a
+
+    @relation()
+    def assoc(self, a: T, b: T, c: T):
+        return a
+        #return self.oper_(self.oper_(a, b), c)
+    
+    def assoc_rhs(self, a: T, b: T, c: T):
+        return a
+        #return self.oper_(a, self.oper_(b, c))
 
 class CommutativeMonoid(Monoid):
     pass
