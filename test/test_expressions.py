@@ -79,7 +79,7 @@ def test_can_compare_to_non_expressions():
 
 
 def test_Oper_converts_operands_to_tuple():
-    assert Oper('Plus', [Var('x'), Var('y')]).operands == (Var('x'), Var('y'))
+    assert Oper('Plus', Var('x'), Var('y')).operands == (Var('x'), Var('y'))
 
 
 

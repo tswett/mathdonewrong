@@ -101,9 +101,9 @@ class Oper(Expression):
     name: str
     operands: tuple[Expression, ...]
 
-    def __init__(self, name, operands):
+    def __init__(self, name, *operands):
         self.name = name
-        self.operands = tuple(operands)
+        self.operands = operands
 
     def __eq__(self, other):
         return (
@@ -135,7 +135,7 @@ class Oper(Expression):
 
 class Const(Oper):
     def __init__(self, value):
-        super().__init__(str(value), ())
+        super().__init__(str(value))
 
     def __str__(self):
         return self.name
@@ -145,7 +145,7 @@ class Const(Oper):
 
 class BinaryOper(Oper):
     def __init__(self, left, right):
-        super().__init__(self.name, (left, right))
+        super().__init__(self.name, left, right)
 
     def __str__(self):
         return f'{self.operands[0]:{self.precedence}} {self.name} {self.operands[1]:{self.precedence + 1}}'
@@ -155,7 +155,7 @@ class BinaryOper(Oper):
 
 class PrefixOper(Oper):
     def __init__(self, operand):
-        super().__init__(self.name, (operand,))
+        super().__init__(self.name, operand)
 
     def __str__(self):
         operand, = self.operands
@@ -166,7 +166,7 @@ class PrefixOper(Oper):
 
 class NamedOper(Oper):
     def __init__(self, *operands):
-        super().__init__(type(self).__name__, operands)
+        super().__init__(type(self).__name__, *operands)
 
     def __repr__(self):
         return self.repr_like_named_oper()

@@ -62,7 +62,7 @@ class Call:
             oper_name = attr_name_to_oper_name(self.target.attr_name)
 
         operands = [arg.to_expression(context) for arg in self.args]
-        return Oper(oper_name, operands)
+        return Oper(oper_name, *operands)
 
 @dataclass
 class Attr:

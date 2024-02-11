@@ -17,6 +17,6 @@ class MyOper(NamedOper):
 def test_variety_equality():
     # We want to make sure that two varieties are equal if and only if their lhs's are equivalent and their rhs's are equivalent.
 
-    assert Relation(MyOper(), MyOper()) == Relation(Oper('MyOper', ()) , Oper('MyOper', ()))
-    assert Relation(MyOper(), MyOper()) != Relation(Oper('NotMyOper', ()) , Oper('MyOper', ()))
-    assert Relation(MyOper(), MyOper()) != Relation(Oper('MyOper', ()) , Oper('NotMyOper', ()))
+    assert Relation(MyOper(), MyOper()) == Relation(Oper('MyOper') , Oper('MyOper'))
+    assert Relation(MyOper(), MyOper()) != Relation(Oper('NotMyOper') , Oper('MyOper'))
+    assert Relation(MyOper(), MyOper()) != Relation(Oper('MyOper') , Oper('NotMyOper'))

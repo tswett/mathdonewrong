@@ -8,6 +8,7 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
+import pytest
 from mathdonewrong.code_to_expression import expressionize
 from mathdonewrong.lambda_calc.lambda_exprs import Apply, Lambda, LamConst, LamVar
 
@@ -71,3 +72,8 @@ def t_apply_lambda_to_lambda():
 
 def test_expressionize_apply_lambda_to_lambda():
     assert t_apply_lambda_to_lambda.expression == Apply(Lambda('x', LamVar('x')), Lambda('y', LamVar('y')))
+
+
+
+if __name__ == '__main__':
+    pytest.main([__file__])

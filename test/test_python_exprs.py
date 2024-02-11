@@ -71,7 +71,7 @@ def test_parse_a_relation_def():
                     PyNameL('z')))]))
 
 def test_depythonize():
-    expr = Oper('Mult', (Oper('Mult', (Var('x'), Var('y'))), Var('z')))
+    expr = Oper('Mult', Oper('Mult', Var('x'), Var('y')), Var('z'))
     assert depythonize(relation_def) == expr
 
 class TestMonoid(Algebra):
@@ -80,7 +80,7 @@ class TestMonoid(Algebra):
         raise NotImplementedError
 
 def test_depythonize_with_algebra():
-    expr = Oper('Multiply', (Oper('Multiply', (Var('x'), Var('y'))), Var('z')))
+    expr = Oper('Multiply', Oper('Multiply', Var('x'), Var('y')), Var('z'))
     assert depythonize(relation_def, TestMonoid) == expr
 
 if __name__ == '__main__':
