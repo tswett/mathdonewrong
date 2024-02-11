@@ -14,43 +14,74 @@ from mathdonewrong.expressions import Expression, Literal, Oper, Var
 class MyVar(Var):
     pass
 
+def test_var_name():
+    assert Var('x').name == 'x'
+
+
+
 class MyLiteral(Literal):
     pass
+
+class MyVarWithValue(Var):
+    def __init__(self, name, value):
+        super().__init__(name)
+        self.value = value
 
 class MyOperX(Oper):
     def __init__(self, *operands):
         super().__init__('x', operands)
 
-class BadExpression(Expression):
-    @property
-    def tag(self):
-        return 'bad'
+class NotAnExpression:
+    def __init__(self, tag, name=None):
+        self.tag = tag
+        if name is not None:
+            self.name = name
 
-def test_from_expr():
-    assert Expression.from_expr(Var('x')) == Var('x')
-    assert Expression.from_expr(MyVar('y')) == Var('y')
+def test_different_things_not_equal():
+    assert Var('x') != Var('y')
 
-    assert Expression.from_expr(Literal(1)) == Literal(1)
-    assert Expression.from_expr(MyLiteral(2)) == Literal(2)
+    assert Literal(1) != Literal(2)
 
-    assert Expression.from_expr(Oper('x', ())) == Oper('x', ())
-    assert Expression.from_expr(Oper('y', ())) == Oper('y', ())
-    assert Expression.from_expr(MyOperX()) == Oper('x', ())
+    assert Oper('x', ()) != Oper('y', ())
+    assert Oper('x', (Var('y'),)) != Oper('x', (Var('z'),))
 
-    assert Expression.from_expr(Oper('x', (MyVar('y'),))) == Oper('x', (Var('y'),))
+def test_subclass_things_are_equal():
+    assert MyVar('x') == Var('x')
+    assert Var('x') == MyVar('x')
+    assert MyVar('x') == MyVar('x')
 
-    with pytest.raises(ValueError):
-        Expression.from_expr(BadExpression())
+    assert MyLiteral(1) == Literal(1)
+    assert Literal(1) == MyLiteral(1)
+    assert MyLiteral(1) == MyLiteral(1)
 
-def test_identical_variables_are_equivalent():
-    assert Var('x').is_equiv(Var('x'))
+    assert MyOperX(Var('y')) == Oper('x', (Var('y'),))
+    assert MyOperX(Var('y')) == MyOperX(Var('y'))
 
-def test_different_variables_not_equivalent():
-    assert not Var('x').is_equiv(Var('y'))
+def test_variable_not_equal_to_operator():
+    assert Var('x') != Oper('x', ())
+    assert Oper('x', ()) != Var('x')
 
-def test_subclass_variable_is_equivalent():
-    assert MyVar('x').is_equiv(Var('x'))
-    assert Var('x').is_equiv(MyVar('x'))
+def test_literal_not_equal_to_var():
+    assert Literal(1) != MyVarWithValue('x', 1)
+
+def test_can_compare_to_non_expressions():
+    assert Var('x') != 'x'
+    assert Var('x') != NotAnExpression('var')
+
+    assert Literal(1) != 1
+    assert Literal(1) != NotAnExpression('literal')
+    assert Literal(None) != NotAnExpression('literal')
+
+    assert Oper('x', ()) != 'x'
+    assert Oper('x', ()) != NotAnExpression('oper')
+    assert Oper('x', ()) != NotAnExpression('oper', name='x')
+
+
 
 def test_Oper_converts_operands_to_tuple():
     assert Oper('Plus', [Var('x'), Var('y')]).operands == (Var('x'), Var('y'))
+
+
+
+if __name__ == '__main__':
+    pytest.main([__file__])

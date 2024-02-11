@@ -45,33 +45,38 @@ class Expression:
     def traverse(self, visitor):
         raise NotImplementedError
 
-    @staticmethod
-    def from_expr(other):
-        if other.tag == 'var':
-            return Var(other.name)
-        elif other.tag == 'literal':
-            return Literal(other.value)
-        elif other.tag == 'oper':
-            new_operands = tuple(Expression.from_expr(operand) for operand in other.operands)
-            return Oper(other.name, new_operands)
-        else:
-            raise ValueError(f"Expression tag not recognized: '{other.tag}'")
+    #@staticmethod
+    #def from_expr(other):
+    #    if other.tag == 'var':
+    #        return Var(other.name)
+    #    elif other.tag == 'literal':
+    #        return Literal(other.value)
+    #    elif other.tag == 'oper':
+    #        new_operands = tuple(Expression.from_expr(operand) for operand in other.operands)
+    #        return Oper(other.name, new_operands)
+    #    else:
+    #        raise ValueError(f"Expression tag not recognized: '{other.tag}'")
 
-    def is_equiv(self, other):
-        return Expression.from_expr(self) == Expression.from_expr(other)
+    #def is_equiv(self, other):
+    #    return Expression.from_expr(self) == Expression.from_expr(other)
 
 @dataclass
 class Var(Expression):
     name: str
-
-    def evaluate_in(self, algebra, context):
-        return context[self.name]
 
     def __str__(self):
         return self.name
 
     def __repr__(self):
         return f"{type(self).__name__}({self.name!r})"
+
+    def __eq__(self, other):
+        return (
+            getattr(other, 'tag', None) == 'var' and
+            self.name == getattr(other, 'name', None))
+
+    def evaluate_in(self, algebra, context):
+        return context[self.name]
 
     def traverse(self, visitor):
         return visitor.visit_var(self)
@@ -84,14 +89,20 @@ class Var(Expression):
 class Literal(Expression):
     value: Any
 
-    def evaluate_in(self, algebra, context):
-        return self.value
-
     def __str__(self):
         return str(self.value)
 
     def __repr__(self):
         return f"{type(self).__name__}({self.value!r})"
+
+    def __eq__(self, other):
+        return (
+            getattr(other, 'tag', None) == 'literal' and
+            hasattr(other, 'value') and
+            self.value == other.value)
+
+    def evaluate_in(self, algebra, context):
+        return self.value
 
     def traverse(self, visitor):
         return visitor.visit_literal(self)
@@ -108,6 +119,12 @@ class Oper(Expression):
     def __init__(self, name, operands):
         self.name = name
         self.operands = tuple(operands)
+
+    def __eq__(self, other):
+        return (
+            getattr(other, 'tag', None) == 'oper' and
+            self.name == getattr(other, 'name', None) and
+            self.operands == getattr(other, 'operands', None))
 
     def evaluate_in(self, algebra, context):
         operand_values = [operand.evaluate_in(algebra, context) for operand in self.operands]
