@@ -21,15 +21,6 @@ class Relation:
     lhs: Expression
     rhs: Expression
 
-    # This seems like kind of an inelegant way to handle equality versus
-    # equivalence. Let's think of something better.
-    def __eq__(self, other):
-        return (
-            isinstance(other, Relation) and
-            self.lhs.is_equiv(other.lhs) and
-            self.rhs.is_equiv(other.rhs)
-        )
-
 class Variety:
     operators: list[Operator]
     relations: list[Relation]

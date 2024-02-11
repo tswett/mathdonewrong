@@ -45,21 +45,6 @@ class Expression:
     def traverse(self, visitor):
         raise NotImplementedError
 
-    #@staticmethod
-    #def from_expr(other):
-    #    if other.tag == 'var':
-    #        return Var(other.name)
-    #    elif other.tag == 'literal':
-    #        return Literal(other.value)
-    #    elif other.tag == 'oper':
-    #        new_operands = tuple(Expression.from_expr(operand) for operand in other.operands)
-    #        return Oper(other.name, new_operands)
-    #    else:
-    #        raise ValueError(f"Expression tag not recognized: '{other.tag}'")
-
-    #def is_equiv(self, other):
-    #    return Expression.from_expr(self) == Expression.from_expr(other)
-
 @dataclass
 class Var(Expression):
     name: str

@@ -72,7 +72,7 @@ def test_parse_a_relation_def():
 
 def test_depythonize():
     expr = Oper('Mult', (Oper('Mult', (Var('x'), Var('y'))), Var('z')))
-    assert depythonize(relation_def).is_equiv(expr)
+    assert depythonize(relation_def) == expr
 
 class TestMonoid(Algebra):
     @operator('Multiply')
@@ -81,7 +81,7 @@ class TestMonoid(Algebra):
 
 def test_depythonize_with_algebra():
     expr = Oper('Multiply', (Oper('Multiply', (Var('x'), Var('y'))), Var('z')))
-    assert depythonize(relation_def, TestMonoid).is_equiv(expr)
+    assert depythonize(relation_def, TestMonoid) == expr
 
 if __name__ == '__main__':
     pytest.main([__file__])

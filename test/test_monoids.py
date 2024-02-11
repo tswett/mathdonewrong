@@ -54,13 +54,10 @@ def test_monoid_variety_is_correct():
         Operator('MonOper'),
     ]
 
-    # TODO: ugh, look at this equality hack! We should just make Expression say
-    # it's equal to any equivalent expression.
-    C = Expression.from_expr
     assert vty.relations == [
-        Relation(C(Id() * a), C(a)),
-        Relation(C(a * Id()), C(a)),
-        Relation(C((a * b) * c), C(a * (b * c))),
+        Relation(Id() * a, a),
+        Relation(a * Id(), a),
+        Relation((a * b) * c, a * (b * c)),
     ]
 
 
