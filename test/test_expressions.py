@@ -51,3 +51,6 @@ def test_different_variables_not_equivalent():
 def test_subclass_variable_is_equivalent():
     assert MyVar('x').is_equiv(Var('x'))
     assert Var('x').is_equiv(MyVar('x'))
+
+def test_Oper_converts_operands_to_tuple():
+    assert Oper('Plus', [Var('x'), Var('y')]).operands == (Var('x'), Var('y'))

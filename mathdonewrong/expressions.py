@@ -105,6 +105,10 @@ class Oper(Expression):
     name: str
     operands: tuple[Expression, ...]
 
+    def __init__(self, name, operands):
+        self.name = name
+        self.operands = tuple(operands)
+
     def evaluate_in(self, algebra, context):
         operand_values = [operand.evaluate_in(algebra, context) for operand in self.operands]
         return algebra.operate(self.name, operand_values)

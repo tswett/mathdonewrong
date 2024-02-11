@@ -17,7 +17,7 @@ from typing import Callable
 from mathdonewrong.varieties import Operator, Relation, Variety
 
 class AlgebraClass(type):
-    operators: dict[str, AlgebraMember]
+    members: dict[str, AlgebraMember]
 
     @staticmethod
     def __prepare__(name, bases):
@@ -36,7 +36,15 @@ class AlgebraClass(type):
         from mathdonewrong.python_exprs.depythonize import depythonize
 
         source = textwrap.dedent(inspect.getsource(getattr(cls, attr_name)))
-        return depythonize(source)
+        return depythonize(source, cls)
+
+    def attr_name_to_oper_name(cls, attr_name):
+        # TODO: use a dictionary lookup for this
+        for oper_name in cls.members:
+            if cls.members[oper_name].attr_name == attr_name:
+                return oper_name
+
+        return attr_name_to_oper_name(attr_name)
 
     @property
     def variety(cls):

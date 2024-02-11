@@ -10,6 +10,7 @@
 
 import pytest
 from mathdonewrong.equality.equality_exprs import EqSymm, EqTrans
+from mathdonewrong.expressions import Expression
 from mathdonewrong.monoids.monoids import Assoc, Id, MonLiteral, MonOper, MonVar, Monoid, MonoidEqualityAlgebra, MonoidEquation, MonoidHomomorphism, int_addition, int_multiplication, int_scale, string_monoid, tuple_monoid
 from mathdonewrong.varieties import Operator, Relation
 
@@ -44,7 +45,7 @@ def test_int_scale_homomorphism():
             assert hom(y) == x * y
 
 def test_monoid_variety_is_correct():
-    x, y, z = MonVar('x'), MonVar('y'), MonVar('z')
+    a, b, c = MonVar('a'), MonVar('b'), MonVar('c')
 
     vty = Monoid.variety
 
@@ -53,14 +54,14 @@ def test_monoid_variety_is_correct():
         Operator('MonOper'),
     ]
 
-    assert len(vty.relations) == 3
-    # TODO: make "depythonize" get the correct operator names, then we can
-    # uncomment this
-    #assert vty.relations == [
-    #    Relation(Id() * x, x),
-    #    Relation(x * Id(), x),
-    #    Relation((x * y) * z, x * (y * z)),
-    #]
+    # TODO: ugh, look at this equality hack! We should just make Expression say
+    # it's equal to any equivalent expression.
+    C = Expression.from_expr
+    assert vty.relations == [
+        Relation(C(Id() * a), C(a)),
+        Relation(C(a * Id()), C(a)),
+        Relation(C((a * b) * c), C(a * (b * c))),
+    ]
 
 
 

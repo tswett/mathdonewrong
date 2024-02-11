@@ -10,6 +10,7 @@
 
 import textwrap
 import pytest
+from mathdonewrong.algebras import Algebra, operator
 from mathdonewrong.expressions import Oper, Var
 from mathdonewrong.python_exprs.depythonize import depythonize
 
@@ -72,6 +73,15 @@ def test_parse_a_relation_def():
 def test_depythonize():
     expr = Oper('Mult', (Oper('Mult', (Var('x'), Var('y'))), Var('z')))
     assert depythonize(relation_def).is_equiv(expr)
+
+class TestMonoid(Algebra):
+    @operator('Multiply')
+    def mult(self, a, b):
+        raise NotImplementedError
+
+def test_depythonize_with_algebra():
+    expr = Oper('Multiply', (Oper('Multiply', (Var('x'), Var('y'))), Var('z')))
+    assert depythonize(relation_def, TestMonoid).is_equiv(expr)
 
 if __name__ == '__main__':
     pytest.main([__file__])
