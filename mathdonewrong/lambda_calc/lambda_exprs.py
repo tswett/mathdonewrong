@@ -8,66 +8,75 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from mathdonewrong.algebras import Algebra, operator
-from mathdonewrong.expressions import Const, Expression, Literal, NamedOper, Var
+from mathdonewrong.expressions import Literal, NamedOper
 
 class LambdaExpr:
-    def l_evaluate_with(self, var, value):
-        return self
+    pass
 
 # TODO: these should all inherit from LambdaExpr
 
-class Lambda(LambdaExpr, NamedOper):
-    def __init__(self, var, body):
-        super().__init__(Literal(var), body)
-        self.free_vars = body.free_vars
+class Lambda(NamedOper):
+    def __init__(self, param, body):
+        super().__init__(Literal(param), body)
 
     def __repr__(self):
         return f"Lambda({self.operands[0].value!r}, {self.operands[1]!r})"
 
     @property
+    def param(self):
+        param_, body = self.operands
+        return param_.value
+
+    @property
     def body(self):
-        var, body = self.operands
+        param_, body = self.operands
         return body
 
+    def l_eval(self, context=None):
+        context = context or {}
+        return Closure(self.param, self.body, context)
+
 class LVar(NamedOper):
-    def __init__(self, name):
-        super().__init__(Literal(name))
-        self.free_vars = (name,)
+    def __init__(self, varname):
+        super().__init__(Literal(varname))
 
     def __repr__(self):
         return f"LVar({self.operands[0].value!r})"
 
-    def l_evaluate_with(self, var, value):
-        # TODO: check if var == self.name
-        return value
+    @property
+    def varname(self):
+        varname_, = self.operands
+        return varname_.value
+
+    def l_eval(self, context=None):
+        context = context or {}
+        return context[self.varname]
 
 class Apply(NamedOper):
-    pass
+    @property
+    def func(self):
+        func, arg = self.operands
+        return func
+
+    @property
+    def arg(self):
+        func, arg = self.operands
+        return arg
+
+    def l_eval(self, context=None):
+        context = context or {}
+
+        func_ev = self.func.l_eval(context)
+        arg_ev = self.arg.l_eval(context)
+
+        return func_ev.body.l_eval(func_ev.env | {func_ev.param: arg_ev})
+
+
 
 @dataclass
-class BoundExpr:
-    expr: LambdaExpr
-    context: dict[str, LambdaExpr] = field(default_factory=dict)
-
-    def apply(self, arg):
-        # TODO: obviously the parameter isn't always named 'x'
-        new_body = self.expr.body.l_evaluate_with('x', arg.expr)
-
-        if 'x' in new_body.free_vars:
-            # TODO: carry the rest of the context over, too
-            return BoundExpr(new_body, {'x': arg.expr})
-        else:
-            return BoundExpr(new_body)
-
-class EvalAlgebra(Algebra):
-    @operator('Lambda')
-    def lambda_(self, var, body):
-        return BoundExpr(Lambda(var, body.expr))
-
-    def l_var(self, name):
-        return BoundExpr(LVar(name))
-
-    def apply(self, fun, arg):
-        return fun.apply(arg)
+class Closure:
+    param: str
+    body: LambdaExpr
+    env: dict
