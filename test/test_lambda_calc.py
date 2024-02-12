@@ -12,17 +12,28 @@ import pytest
 from mathdonewrong.expressions import Var
 from mathdonewrong.lambda_calc.lambda_exprs import Apply, Closure, Lambda, LVar
 
-B = Lambda('x', Lambda('y', Lambda('z', Apply(LVar('x'), Apply(LVar('y'), LVar('z'))))))
-C = Lambda('x', Lambda('y', Lambda('z', Apply(Apply(LVar('x'), LVar('z')), LVar('y')))))
-I = Lambda('x', LVar('x'))
-K = Lambda('x', Lambda('y', LVar('x')))
-S = Lambda('x', Lambda('y', Lambda('z', Apply(Apply(LVar('x'), LVar('z')), Apply(LVar('y'), LVar('z'))))))
-W = Lambda('x', Lambda('y', Apply(Apply(LVar('x'), LVar('y')), LVar('y'))))
+x, y, z = LVar('x'), LVar('y'), LVar('z')
 
 def test_repr():
     assert repr(LVar('x')) == "LVar('x')"
     assert repr(Lambda('x', Var('y'))) == "Lambda('x', Var('y'))"
     assert repr(Lambda('x', LVar('x'))) == "Lambda('x', LVar('x'))"
+
+def test_apply_shortcut():
+    assert x(y) == Apply(x, y)
+    assert x(y)(z) == Apply(Apply(x, y), z)
+    assert Lambda('x', y)(z) == Apply(Lambda('x', y), z)
+
+Lx = lambda arg: Lambda('x', arg)
+Ly = lambda arg: Lambda('y', arg)
+Lz = lambda arg: Lambda('z', arg)
+
+B = Lx(Ly(Lz(x(y(z)))))
+C = Lx(Ly(Lz(x(z)(y))))
+I = Lx(x)
+K = Lx(Ly(x))
+S = Lx(Ly(Lz(x(z)(y(z)))))
+W = Lx(Ly(x(y)(y)))
 
 def test_l_eval():
     I_ev = Closure('x', LVar('x'), {})
@@ -41,6 +52,30 @@ def test_l_eval():
     assert Apply(Apply(Lambda('y', Lambda('y', LVar('y'))), I), K).l_eval() == K_ev
 
     assert Apply(Lambda('x', Apply(Apply(K, LVar('x')), LVar('x'))), I).l_eval() == I_ev
+
+def test_bciksw():
+    true = K
+    false = K(I)
+
+    true_ev = Closure('x', Ly(x), {})
+    false_ev = Closure('y', x, {'x': I.l_eval()})
+
+    assert true.l_eval() == true_ev
+    assert false.l_eval() == false_ev
+
+    not_ = C(C(I)(false))(true)
+
+    assert not_(true).l_eval() == false_ev
+    assert not_(false).l_eval() == true_ev
+
+    notnot = B(not_)(not_)
+
+    assert notnot(true).l_eval() == true_ev
+    assert notnot(false).l_eval() == false_ev
+
+    # I'm calling that good for now.
+
+
 
 
 

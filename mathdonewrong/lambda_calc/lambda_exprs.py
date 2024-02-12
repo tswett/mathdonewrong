@@ -13,11 +13,10 @@ from mathdonewrong.algebras import Algebra, operator
 from mathdonewrong.expressions import Literal, NamedOper
 
 class LambdaExpr:
-    pass
+    def __call__(self, arg):
+        return Apply(self, arg)
 
-# TODO: these should all inherit from LambdaExpr
-
-class Lambda(NamedOper):
+class Lambda(LambdaExpr, NamedOper):
     def __init__(self, param, body):
         super().__init__(Literal(param), body)
 
@@ -38,7 +37,7 @@ class Lambda(NamedOper):
         context = context or {}
         return Closure(self.param, self.body, context)
 
-class LVar(NamedOper):
+class LVar(LambdaExpr, NamedOper):
     def __init__(self, varname):
         super().__init__(Literal(varname))
 
@@ -54,7 +53,7 @@ class LVar(NamedOper):
         context = context or {}
         return context[self.varname]
 
-class Apply(NamedOper):
+class Apply(LambdaExpr, NamedOper):
     @property
     def func(self):
         func, arg = self.operands
