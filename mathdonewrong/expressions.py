@@ -86,7 +86,7 @@ class Literal(Expression):
             hasattr(other, 'value') and
             self.value == other.value)
 
-    def evaluate_in(self, algebra, context):
+    def evaluate_in(self, algebra, context=None):
         return self.value
 
     def traverse(self, visitor):
@@ -111,7 +111,7 @@ class Oper(Expression):
             self.name == getattr(other, 'name', None) and
             self.operands == getattr(other, 'operands', None))
 
-    def evaluate_in(self, algebra, context):
+    def evaluate_in(self, algebra, context=None):
         operand_values = [operand.evaluate_in(algebra, context) for operand in self.operands]
         return algebra.operate(self.name, operand_values)
 

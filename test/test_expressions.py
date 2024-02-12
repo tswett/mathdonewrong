@@ -9,6 +9,7 @@
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
 import pytest
+from mathdonewrong.algebras import Algebra
 from mathdonewrong.expressions import Expression, Literal, Oper, Var
 
 class MyVar(Var):
@@ -80,6 +81,16 @@ def test_can_compare_to_non_expressions():
 
 def test_Oper_converts_operands_to_tuple():
     assert Oper('Plus', Var('x'), Var('y')).operands == (Var('x'), Var('y'))
+
+
+
+class TestAlgebra(Algebra):
+    def t(self):
+        return True
+
+def test_can_evaluate_things_without_context():
+    assert Oper('T').evaluate_in(TestAlgebra()) == True
+    assert Literal(50).evaluate_in(TestAlgebra()) == 50
 
 
 

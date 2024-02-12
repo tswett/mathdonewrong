@@ -14,7 +14,7 @@ import inspect
 from typing import Any, Callable
 
 from mathdonewrong.expressions import Expression, Oper, Var
-from mathdonewrong.lambda_calc.lambda_exprs import Apply, LamConst, LamVar, Lambda
+#from mathdonewrong.lambda_calc.lambda_exprs import Apply, LamConst, LamVar, Lambda
 
 class SubstitutionVisitor:
     def __init__(self, context: dict[str, Expression]):
