@@ -1,0 +1,23 @@
+﻿mathdonewrong
+=============
+
+.. automodule:: mathdonewrong
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

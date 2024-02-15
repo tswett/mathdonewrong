@@ -12,6 +12,8 @@ from dataclasses import dataclass
 from typing import Any
 
 class Expression:
+    """An Expression is an expression tree, consisting of operators, variables, and literals."""
+
     precedence = 100
 
     def __str__(self):
