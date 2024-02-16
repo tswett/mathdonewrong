@@ -9,7 +9,7 @@
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
 from mathdonewrong.expressions import Literal, Oper
-from mathdonewrong.primitive_recursive.primrec_exprs import Comp, PConst, Proj, StandardPrimitiveRecursiveAlgebra, Succ
+from mathdonewrong.primitive_recursive.primrec_exprs import Comp, PConst, PrimRec, Proj, Stack, StandardPrimitiveRecursiveAlgebra, Succ
 
 alg = StandardPrimitiveRecursiveAlgebra()
 
@@ -26,32 +26,52 @@ def test_proj():
     assert repr(Proj(1)) == 'Proj(1)'
 
 def test_constant():
-    assert PConst(0).evaluate_in(alg, {})() == 0
-    assert PConst(1).evaluate_in(alg, {})() == 1
-    assert PConst(2).evaluate_in(alg, {})() == 2
-    assert PConst(3).evaluate_in(alg, {})() == 3
+    assert PConst(0).evaluate_in(alg)() == 0
+    assert PConst(1).evaluate_in(alg)() == 1
+    assert PConst(2).evaluate_in(alg)() == 2
+    assert PConst(3).evaluate_in(alg)() == 3
 
-    assert PConst(4).evaluate_in(alg, {})(3) == 4
+    assert PConst(4).evaluate_in(alg)(3) == 4
 
 def test_successor():
-    assert Succ().evaluate_in(alg, {})(0) == 1
-    assert Succ().evaluate_in(alg, {})(1) == 2
-    assert Succ().evaluate_in(alg, {})(2) == 3
-    assert Succ().evaluate_in(alg, {})(3) == 4
+    assert Succ().evaluate_in(alg)(0) == 1
+    assert Succ().evaluate_in(alg)(1) == 2
+    assert Succ().evaluate_in(alg)(2) == 3
+    assert Succ().evaluate_in(alg)(3) == 4
 
 def test_projection():
-    assert Proj(0).evaluate_in(alg, {})(3) == 3
+    assert Proj(0).evaluate_in(alg)(3) == 3
 
-    assert Proj(0).evaluate_in(alg, {})(3, 1) == 3
-    assert Proj(1).evaluate_in(alg, {})(3, 1) == 1
+    assert Proj(0).evaluate_in(alg)(3, 1) == 3
+    assert Proj(1).evaluate_in(alg)(3, 1) == 1
 
-    assert Proj(0).evaluate_in(alg, {})(3, 1, 4) == 3
-    assert Proj(1).evaluate_in(alg, {})(3, 1, 4) == 1
-    assert Proj(2).evaluate_in(alg, {})(3, 1, 4) == 4
+    assert Proj(0).evaluate_in(alg)(3, 1, 4) == 3
+    assert Proj(1).evaluate_in(alg)(3, 1, 4) == 1
+    assert Proj(2).evaluate_in(alg)(3, 1, 4) == 4
+
+def test_stacking():
+    assert Stack(Succ()).evaluate_in(alg)(10) == [11]
+
+    assert Stack(Succ(), PConst(2)).evaluate_in(alg)(10) == [11, 2]
+
+    assert Stack(Proj(1), Proj(0)).evaluate_in(alg)(10, 20) == [20, 10]
+
+    assert Stack(Proj(1), Stack(PConst(128), Proj(0))).evaluate_in(alg)(10, 20) == [20, [128, 10]]
+
+    assert Stack(Proj(3), Proj(2), Proj(1), Proj(0)).evaluate_in(alg)(10, 20, 30, 40) == [40, 30, 20, 10]
 
 def test_composition():
-    assert Comp(Proj(0), Succ(), PConst(2)).evaluate_in(alg, {})(10) == 11
-    assert Comp(Proj(1), Succ(), PConst(2)).evaluate_in(alg, {})(10) == 2
+    assert Comp(Succ(), Stack(PConst(2))).evaluate_in(alg)(10) == 3
 
-    assert Comp(Proj(0), Proj(1), Proj(0)).evaluate_in(alg, {})(10, 20) == 20
-    assert Comp(Proj(1), Proj(1), Proj(0)).evaluate_in(alg, {})(10, 20) == 10
+    assert Comp(Succ(), Stack(Proj(1))).evaluate_in(alg)(10, 20) == 21
+    assert Comp(Proj(1), Stack(PConst(128), Succ())).evaluate_in(alg)(10) == 11
+
+def test_primitive_recursion():
+    const_10 = PConst(10)
+    twice_second_arg = Comp(Comp(Succ(), Stack(Succ())), Stack(Proj(1)))
+    double_plus_10 = PrimRec(const_10, twice_second_arg)
+
+    assert double_plus_10.evaluate_in(alg)(0) == 10
+    assert double_plus_10.evaluate_in(alg)(1) == 12
+    assert double_plus_10.evaluate_in(alg)(2) == 14
+    assert double_plus_10.evaluate_in(alg)(3) == 16
