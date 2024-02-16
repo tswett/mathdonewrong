@@ -8,11 +8,12 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
+from types import NoneType
 from typing import Callable
 
 import pytest
 
-from mathdonewrong.primitive_recursive.primrec_exprs_typed import Comp, Const, Fork, Select, Succ, Zero
+from mathdonewrong.primitive_recursive.primrec_exprs_typed import Comp, Const, Fork, Id, NatRecurse, Select, Succ, Zero
 
 def test_succ():
     assert Succ().typecheck() == Callable[[int], int]
@@ -47,6 +48,17 @@ def test_select():
     assert Select(1, int, tuple[int, int]).typecheck() == Callable[[tuple[int, tuple[int, int]]], tuple[int, int]]
     assert Select(1, int, tuple[int, int]).to_func()((0, (1, 2))) == (1, 2)
 
+def test_id():
+    assert repr(Id(int)) == "Id(<class 'int'>)"
+
+    assert Id(int).typecheck() == Callable[[int], int]
+    assert Id(int).to_func()(0) == 0
+    assert Id(int).to_func()(1) == 1
+
+    assert Id(str).typecheck() == Callable[[str], str]
+    assert Id(str).to_func()('north') == 'north'
+    assert Id(str).to_func()('south') == 'south'
+
 def test_comp():
     # Note: this is left-to-right composition
 
@@ -73,19 +85,34 @@ def test_const():
     assert Const(int, None, None).typecheck() == Callable[[int], None]
     assert Const(int, None, None).to_func()(18) == None
 
-@pytest.mark.skip("Not implemented yet")
 def test_natrecurse():
-    # Double-plus-ten
+    # Use primitive recursion to define a "double plus ten" function
 
     base = Const(None, int, 10)
     assert base.typecheck() == Callable[[None], int]
 
-    step = Select(0, None, int)
+    step = Comp(Select(1, None, int), Comp(Succ(), Succ()))
     assert step.typecheck() == Callable[[tuple[None, int]], int]
 
     double_plus_ten = NatRecurse(base, step)
-    assert double_plus_ten.typecheck() == Callable[[tuple[None, int]], int]
+    assert double_plus_ten.typecheck() == Callable[[tuple[NoneType, int]], int]
 
     assert double_plus_ten.to_func()((None, 0)) == 10
     assert double_plus_ten.to_func()((None, 1)) == 12
     assert double_plus_ten.to_func()((None, 2)) == 14
+
+def test_natrecurse_addition():
+    base = Id(int)
+    assert base.typecheck() == Callable[[int], int]
+
+    step = Comp(Select(1, int, int), Succ())
+    assert step.typecheck() == Callable[[tuple[int, int]], int]
+
+    global add
+    add = NatRecurse(base, step)
+    assert add.typecheck() == Callable[[tuple[int, int]], int]
+
+    assert add.to_func()((0, 0)) == 0
+    assert add.to_func()((0, 5)) == 5
+    assert add.to_func()((3, 0)) == 3
+    assert add.to_func()((3, 5)) == 8
