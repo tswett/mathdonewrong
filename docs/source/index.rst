@@ -16,8 +16,8 @@ This is "mathdonewrong," a somewhat silly attempt at doing formalized
 mathematics in Python. You may be thinking that Python is not the right language
 for doing formalized mathematics in—and that's the reason for the name.
 
-By the way, please bear with me while I figure out how to use Sphinx for
-documentation.
+(sorry, I don't know how Sphinx works so this documentation looks pretty messed
+up at the moment)
 
 .. toctree::
    :maxdepth: 2

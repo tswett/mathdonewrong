@@ -10,7 +10,7 @@
    FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
 Stuff
-===
+=====
 
 .. autosummary::
    :toctree: generated
@@ -18,3 +18,12 @@ Stuff
    mathdonewrong.algebras.Algebra
    mathdonewrong.expressions
    mathdonewrong.expressions.Expression
+
+mathdonewrong.common.common_opers module
+=========================================
+
+.. automodule:: mathdonewrong.common.common_opers
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
