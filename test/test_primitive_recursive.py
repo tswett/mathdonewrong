@@ -75,3 +75,80 @@ def test_primitive_recursion():
     assert double_plus_10.evaluate_in(alg)(1) == 12
     assert double_plus_10.evaluate_in(alg)(2) == 14
     assert double_plus_10.evaluate_in(alg)(3) == 16
+
+
+
+    # Addition
+
+    # g(y) = y
+    g = Proj(0)
+
+    # h(x, f(x, y), y) = succ(f(x, y))
+    h = Comp(Succ(), Stack(Proj(1)))
+
+    # f(0, y) = g(y) = y
+    # f(S(x), y) = h(x, f(x, y), y) = succ(f(x, y))
+    add2 = PrimRec(g, h)
+
+    assert add2.evaluate_in(alg)(0, 0) == 0
+    assert add2.evaluate_in(alg)(3, 0) == 3
+    assert add2.evaluate_in(alg)(0, 5) == 5
+    assert add2.evaluate_in(alg)(3, 5) == 8
+
+
+
+    # Multiplication
+
+    # g(y) = 0
+    g = PConst(0)
+
+    # h(x, f(x, y), y) = f(x, y) + y
+    h = Comp(add2, Stack(Proj(1), Proj(2)))
+
+    # f(0, y) = g(y) = 0
+    # f(S(x), y) = h(x, f(x, y), y) = f(x, y) + y
+    mult2 = PrimRec(g, h)
+
+    assert mult2.evaluate_in(alg)(0, 0) == 0
+    assert mult2.evaluate_in(alg)(3, 0) == 0
+    assert mult2.evaluate_in(alg)(0, 5) == 0
+    assert mult2.evaluate_in(alg)(3, 5) == 15
+
+
+
+    # Triangular numbers
+
+    # g() = 0
+    g = PConst(0)
+
+    # h(x, f(x)) = S(x) + f(x)
+    h = Comp(add2, Stack(Comp(Succ(), Stack(Proj(0))), Proj(1)))
+
+    # f(0) = g() = 0
+    # f(S(x)) = h(x, f(x)) = S(x) + f(x)
+    triang = PrimRec(g, h)
+
+    assert triang.evaluate_in(alg)(0) == 0
+    assert triang.evaluate_in(alg)(1) == 1
+    assert triang.evaluate_in(alg)(2) == 3
+    assert triang.evaluate_in(alg)(3) == 6
+    assert triang.evaluate_in(alg)(4) == 10
+
+
+
+    # Predecessor-or-10
+
+    # g() = 10
+    g = PConst(10)
+
+    # h(x, f(x)) = x
+    h = Proj(0)
+
+    # f(0) = g() = 10
+    # f(S(x)) = h(x, f(x)) = x
+    pred_or_10 = PrimRec(g, h)
+
+    assert pred_or_10.evaluate_in(alg)(0) == 10
+    assert pred_or_10.evaluate_in(alg)(1) == 0
+    assert pred_or_10.evaluate_in(alg)(2) == 1
+    assert pred_or_10.evaluate_in(alg)(3) == 2

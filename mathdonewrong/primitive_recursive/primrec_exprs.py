@@ -79,11 +79,10 @@ class StandardPrimitiveRecursiveAlgebra(Algebra):
         return comp_func
 
     def prim_rec(self, base: Callable, step: Callable) -> Callable:
-        def prim_rec_func(x: PRValue) -> PRValue:
-            # TODO: provide the correct first argument for step, and pass the pass-through parameters
-            value = base()
+        def prim_rec_func(x: PRValue, *args: PRValue) -> PRValue:
+            value = base(*args)
             for i in range(x):
-                value = step(0, value)
+                value = step(i, value, *args)
             return value
 
         return prim_rec_func
