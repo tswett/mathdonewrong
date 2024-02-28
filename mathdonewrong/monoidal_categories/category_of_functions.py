@@ -9,7 +9,7 @@
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
 from typing import Callable, List, TypeVar
-from mathdonewrong.monoidal_categories.categories import CartesianClosedCategory
+from mathdonewrong.monoidal_categories.monoidal_categories import CartesianClosedCategory
 
 A, B, C, D = TypeVar('A'), TypeVar('B'), TypeVar('C'), TypeVar('D')
 

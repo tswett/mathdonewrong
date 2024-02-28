@@ -8,23 +8,19 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
-[tool.poetry]
-name = "mathdonewrong"
-version = "0.1.0"
-description = ""
-authors = ["Tanner Swett <tannerswett@gmail.com>"]
-license = "GNU GPL v3"
-readme = "README.md"
+from __future__ import annotations
 
-[tool.poetry.dependencies]
-python = "^3.11"
-pytest = "^7.4.3"
-sphinx = "^7.2.6"
+from mathdonewrong.algebras import Algebra
 
-[tool.pyright]
-reportInvalidTypeForm = "none"
-reportUndefinedVariable = "none"
+class Category(Algebra):
+    def id(self, A: Ob):
+        raise NotImplementedError
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+    def compose(self, f: Arr[A, B], g: Arr[B, C]) -> Arr[A, C]:
+        raise NotImplementedError
+
+    def domain(self, f: Arr) -> Ob:
+        raise NotImplementedError
+    
+    def codomain(self, f: Arr) -> Ob:
+        raise NotImplementedError

@@ -10,14 +10,7 @@
 
 from __future__ import annotations
 
-from mathdonewrong.algebras import Algebra
-
-class Category(Algebra):
-    def id(self, A: Ob):
-        raise NotImplementedError
-
-    def compose(self, f: Arr[A, B], g: Arr[B, C]) -> Arr[A, C]:
-        raise NotImplementedError
+from mathdonewrong.categories.categories import Category
 
 class MonoidalCategory(Category):
     def stack(self, f: Arr[A, C], g: Arr[B, D]) -> Arr[A * B, C * D]:
