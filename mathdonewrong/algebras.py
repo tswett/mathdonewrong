@@ -71,6 +71,15 @@ def attr_name_to_oper_name(attr_name):
     return ''.join(word[:1].upper() + word[1:] for word in attr_name.split('_'))
 
 class Algebra(metaclass=AlgebraClass):
+    """
+    Algebras or algebraic structures
+
+    An instance of `Algebra` is (at least conceptually) an algebraic structure:
+    a collection of sets (usually just one) and functions operating on those
+    sets, potentially satisfying some axioms. For example, a
+    :class:`~mathdonewrong.monoids.monoids.Monoid` consists of a set and two
+    functions (implementing the monoid operators) satisfying the monoid axioms.
+    """
     def operate(self, operator_name, operands):
         if (member := type(self).members.get(operator_name)) is not None:
             operator = getattr(self, member.attr_name)

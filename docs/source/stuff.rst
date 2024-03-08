@@ -12,6 +12,9 @@
 Stuff
 =====
 
+I'm still trying to figure out how to use Sphinx for documentation, so here's a
+page I've created in the course of figuring it out.
+
 .. autosummary::
    :toctree: generated
 
@@ -28,6 +31,18 @@ Stuff
    mathdonewrong.pyfunctors
    mathdonewrong.python_exprs
    mathdonewrong.varieties
+
+Information about some arbitrary things
+=======================================
+
+.. py:function:: mathdonewrong.monoids.monoids.int_scale(x: int) -> MonoidHomomorphism
+
+   Create a monoid homomorphism :math:`\mathbb{Z} \to \mathbb{Z}` which maps
+   each integer :math:`y` to :math:`xy`.
+
+.. py:class:: mathdonewrong.algebras.Algebra
+
+   I guess this is where I would put a description of the ``Algebra`` class.
 
 common_opers because I don't know where to put this
 ===================================================
