@@ -43,6 +43,12 @@ in the usual way:
     poetry install
     poetry run pytest
 
+To build and view the documentation, run
+
+    poetry run sphinx-build docs/source docs/build
+
+and then open docs/build/index.html in a browser.
+
 There are no instructions for use, because there aren't actually any particular
 intended use cases for any of this. The primary purpose of the libraries is to
 satisfy the tests and the primary purpose of the tests is to motivate the

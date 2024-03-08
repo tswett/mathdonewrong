@@ -15,12 +15,22 @@ Stuff
 .. autosummary::
    :toctree: generated
 
-   mathdonewrong.algebras.Algebra
+   mathdonewrong.algebras
+   mathdonewrong.boolean_algebra
+   mathdonewrong.categories
+   mathdonewrong.common
+   mathdonewrong.equality
    mathdonewrong.expressions
-   mathdonewrong.expressions.Expression
+   mathdonewrong.lambda_calc
+   mathdonewrong.monoidal_categories
+   mathdonewrong.monoids
+   mathdonewrong.primitive_recursive
+   mathdonewrong.pyfunctors
+   mathdonewrong.python_exprs
+   mathdonewrong.varieties
 
-mathdonewrong.common.common_opers module
-=========================================
+common_opers because I don't know where to put this
+===================================================
 
 .. automodule:: mathdonewrong.common.common_opers
    :members:

@@ -26,10 +26,10 @@ their operators.
 
 There are many subclasses of ``Algebra`` corresponding to various varieties and
 instances of mathematical structures. For example,
-:class:`~mathdonewrong.monoids.Monoid` is a subclass of ``Algebra`` which
+:class:`~mathdonewrong.monoids.monoids.Monoid` is a subclass of ``Algebra`` which
 describes the concept of a monoid (but doesn't provide any implementations), and
-:class:`~mathdonewrong.monoids.IntAddition` and
-:class:`~mathdonewrong.monoids.IntMultiplication` are subclasses of ``Monoid``
+:class:`~mathdonewrong.monoids.monoids.IntAddition` and
+:class:`~mathdonewrong.monoids.monoids.IntMultiplication` are subclasses of ``Monoid``
 which actually represent particular monoids, and provide the appropriate
 implementations.
 
@@ -41,8 +41,9 @@ mathematical structures. In no particular order, some of these are:
   homomorphism is.
 - The :mod:`~mathdonewrong.boolean_algebra` module describes Boolean algebras
   and provides an implementation of the standard Boolean algebra.
-- The ``categories`` (TBI) and :mod:`~mathdonewrong.monoidal_categories` modules
-  are an early-feeling attempt at defining categories.
+- The :mod:`~mathdonewrong.categories` and
+  :mod:`~mathdonewrong.monoidal_categories` modules are an early-feeling attempt
+  at defining categories.
 - The :mod:`~mathdonewrong.lambda_calc` and
   :mod:`~mathdonewrong.primitive_recursive` modules define a couple of models of
   computation.
