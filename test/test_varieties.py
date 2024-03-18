@@ -8,8 +8,11 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
-from mathdonewrong.expressions import NamedOper, Oper
-from mathdonewrong.varieties import Relation
+import textwrap
+
+from mathdonewrong.common.common_opers import Times
+from mathdonewrong.expressions import NamedOper, Oper, Var
+from mathdonewrong.varieties import Operator, Relation, Variety
 
 class MyOper(NamedOper):
     pass
@@ -20,3 +23,25 @@ def test_variety_equality():
     assert Relation(MyOper(), MyOper()) == Relation(Oper('MyOper') , Oper('MyOper'))
     assert Relation(MyOper(), MyOper()) != Relation(Oper('NotMyOper') , Oper('MyOper'))
     assert Relation(MyOper(), MyOper()) != Relation(Oper('MyOper') , Oper('NotMyOper'))
+
+x, y, z = Var('x'), Var('y'), Var('z')
+
+variety_of_semigroups = Variety(
+    operators=[Operator('Times')],
+    relations=[Relation(
+        lhs=Times(x, Times(y, z)),
+        rhs=Times(Times(x, y), z)
+    )]
+)
+
+def test_variety_str():
+    assert str(variety_of_semigroups) == textwrap.dedent('''\
+        variety:
+            operators:
+                Times
+            relations:
+                Times(x, Times(y, z)) = Times(Times(x, y), z)''')
+
+def test_Monoid_variety():
+    from mathdonewrong.monoids.monoids import Monoid
+    str(Monoid.variety)

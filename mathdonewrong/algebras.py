@@ -74,7 +74,7 @@ class Algebra(metaclass=AlgebraClass):
     """
     Algebras or algebraic structures
 
-    An instance of `Algebra` is (at least conceptually) an algebraic structure:
+    An instance of ``Algebra`` is (at least conceptually) an algebraic structure:
     a collection of sets (usually just one) and functions operating on those
     sets, potentially satisfying some axioms. For example, a
     :class:`~mathdonewrong.monoids.monoids.Monoid` consists of a set and two

@@ -10,7 +10,7 @@
 
 import pytest
 from mathdonewrong.algebras import Algebra
-from mathdonewrong.expressions import Expression, Literal, Oper, Var
+from mathdonewrong.expressions import Expression, Literal, NamedOper, Oper, Var
 
 class MyVar(Var):
     pass
@@ -91,6 +91,15 @@ class TestAlgebra(Algebra):
 def test_can_evaluate_things_without_context():
     assert Oper('T').evaluate_in(TestAlgebra()) == True
     assert Literal(50).evaluate_in(TestAlgebra()) == 50
+
+
+
+class MyNamedOper(NamedOper):
+    pass
+
+def test_NamedOper_str():
+    assert str(MyNamedOper(Var('x'), Var('y'))) == 'MyNamedOper(x, y)'
+
 
 
 

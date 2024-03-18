@@ -107,6 +107,9 @@ class Oper(Expression):
         self.name = name
         self.operands = operands
 
+    def __str__(self):
+        return f"{self.name}({', '.join(str(operand) for operand in self.operands)})"
+
     def __eq__(self, other):
         return (
             getattr(other, 'tag', None) == 'oper' and
@@ -169,6 +172,9 @@ class PrefixOper(Oper):
 class NamedOper(Oper):
     def __init__(self, *operands):
         super().__init__(type(self).__name__, *operands)
+
+    def __str__(self):
+        return f'{self.name}({", ".join(str(opnd) for opnd in self.operands)})'
 
     def __repr__(self):
         return self.repr_like_named_oper()

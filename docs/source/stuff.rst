@@ -35,14 +35,9 @@ page I've created in the course of figuring it out.
 Information about some arbitrary things
 =======================================
 
-.. py:function:: mathdonewrong.monoids.monoids.int_scale(x: int) -> MonoidHomomorphism
+.. autofunction:: mathdonewrong.monoids.monoids.int_scale
 
-   Create a monoid homomorphism :math:`\mathbb{Z} \to \mathbb{Z}` which maps
-   each integer :math:`y` to :math:`xy`.
-
-.. py:class:: mathdonewrong.algebras.Algebra
-
-   I guess this is where I would put a description of the ``Algebra`` class.
+.. autoclass:: mathdonewrong.algebras.Algebra
 
 common_opers because I don't know where to put this
 ===================================================
@@ -51,4 +46,3 @@ common_opers because I don't know where to put this
    :members:
    :undoc-members:
    :show-inheritance:
-

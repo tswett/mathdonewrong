@@ -144,6 +144,11 @@ def string_length(x: string_monoid) -> int_addition:
     return len(x)
 
 def int_scale(x: int) -> MonoidHomomorphism:
+    r"""
+    Create a monoid homomorphism :math:`\mathbb{Z} \to \mathbb{Z}` which maps
+    each integer :math:`y` to :math:`xy`.
+    """
+
     @MonoidHomomorphism
     def f(y: int_addition) -> int_addition:
         return x * y
