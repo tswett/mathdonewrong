@@ -8,6 +8,15 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
+"""
+Monoids
+
+This module defines monoids—that is, sets equipped with an operation which is
+associative and has an identity element.
+
+.. autoclass:: mathdonewrong.monoids.monoids.Monoid
+"""
+
 from __future__ import annotations
 from dataclasses import dataclass
 from functools import reduce
@@ -38,6 +47,34 @@ class Assoc(MonoidExpr, NamedOper):
     pass
 
 class Monoid(Algebra):
+    """
+    Set with associative operator with identity
+
+    I should be able to use ``autofunction`` to document some of these methods,
+    right? How does that work? It seems like one of the directives here should
+    work but none of them seem to be doing anything.
+
+    .. autofunction::mathdonewrong.monoids.monoids.Monoid.id_
+    .. autofunction::mathdonewrong.monoids.monoids.Monoid.oper_
+    .. autofunction::Monoid.id_
+    .. autofunction::id_
+
+    Since that doesn't seem to be working, here's some information about the
+    most important members of this class:
+
+    .. attribute:: T: type
+
+       The underlying set or type of this monoid.
+
+    .. function:: id_(self) -> T
+
+       Get the identity element of this monoid.
+
+    .. function:: oper_(self, a: T, b: T) -> T:
+
+       Perform the monoid operation on two elements of this monoid.
+    """
+
     T: type
 
     @property
@@ -46,10 +83,12 @@ class Monoid(Algebra):
 
     @operator('Id')
     def id_(self) -> T:
+        """here's a docstring"""
         raise NotImplementedError
 
     @operator('MonOper')
     def oper_(self, a: T, b: T) -> T:
+        """here's another docstring"""
         raise NotImplementedError
 
     def oper(self, *args: T) -> T:

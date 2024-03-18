@@ -39,11 +39,10 @@ class Variety:
 
     A ``Variety`` is a formal description of some kind of algebraic structure.
     As of this writing, a ``Variety`` consists of a list of
-    :class:`~mathdonewrong.varieties.Operator` s and a list of
-    :class:`~mathdonewrong.varieties.Relation` s. (TODO: figure out how to write
-    that without a space)
+    :class:`~mathdonewrong.varieties.Operator`\s and a list of
+    :class:`~mathdonewrong.varieties.Relation`\s.
 
-    As an example, here is what the ``Variety`` of semigroups may look like:
+    As an example, here is what the ``Variety`` of semigroups may look like::
 
        variety_of_semigroups = Variety(
            operators=[Operator('Mult')],
@@ -52,9 +51,6 @@ class Variety:
                rhs=Oper('Mult', Oper('Mult', Var('x'), Var('y')), Var('z'))
            )]
        )
-    
-    (sorry, I don't know how to do code blocks in RST, so the above is
-    completely messed up)
 
     The property ``variety`` of :class:`~mathdonewrong.algebras.AlgebraClass` is
     intended to automatically extract a ``Variety`` object from a class which
@@ -65,7 +61,7 @@ class Variety:
 
     Future plans for ``Variety``:
 
-    * Allow listing the `sorts` that a variety has (for example, a graph has two
+    * Allow listing the *sorts* that a variety has (for example, a graph has two
       sorts: vertices and edges).
     * Allow specifying the domain and codomain of each operator.
     * Allow explicitly specifying the context of each relation.

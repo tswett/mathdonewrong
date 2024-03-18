@@ -17,12 +17,4 @@ algebras related to monoids.
 
 For now, only plain old monoids are defined. See
 :mod:`mathdonewrong.monoids.monoids`.
-
-(Am I supposed to put an autosummary command in a docstring like this? This
-doesn't feel like the right way to do things.)
-
-.. autosummary::
-   :toctree: generated
-
-   mathdonewrong.monoids.monoids
 """

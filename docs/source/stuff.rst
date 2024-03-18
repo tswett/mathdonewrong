@@ -27,6 +27,7 @@ page I've created in the course of figuring it out.
    mathdonewrong.lambda_calc
    mathdonewrong.monoidal_categories
    mathdonewrong.monoids
+   mathdonewrong.monoids.monoids
    mathdonewrong.primitive_recursive
    mathdonewrong.pyfunctors
    mathdonewrong.python_exprs
