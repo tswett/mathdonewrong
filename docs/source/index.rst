@@ -12,9 +12,60 @@
 Math done wrong!
 ================
 
-This is "mathdonewrong," a somewhat silly attempt at doing formalized
-mathematics in Python. You may be thinking that Python is not the right language
-for doing formalized mathematics in—and that's the reason for the name.
+This is "mathdonewrong," a collection of experiments in doing formalized
+mathematics in Python.
+
+At first blush, Python seems like the wrong tool for doing formal math (hence
+the name of the project!). After all, Python has no proof-checking mechanisms,
+or even a static typechecker, and the language itself is not designed for
+expressing the sorts of things we want to be able to express.
+
+However, this lack of any type of checking mechanism also gives us the freedom
+to check our work in whatever way *we* want—or even to deliberately do things a
+little bit wrong, in order to see what will happen.
+
+Organization
+------------
+
+The modules are, in roughly descending order of importance:
+
+- :mod:`~mathdonewrong.algebras`: The :class:`~mathdonewrong.algebras.Algebra`
+  class, which represents algebraic structures (or *algebras* for short).
+- :mod:`~mathdonewrong.expressions`: The
+  :class:`~mathdonewrong.expressions.Expression` class, which represents
+  expression trees. An ``Algebra`` is fundamentally nothing more than a
+  collection of functions implementing the operations in an ``Expression``.
+  These two classes are the foundation of everything else.
+- :mod:`~mathdonewrong.monoids`: The definition of a monoid (the
+  :class:`~mathdonewrong.monoids.monoids.Monoid` class), and a few examples and
+  related concepts. As of this writing, monoids are the most fleshed-out type of
+  algebraic structure.
+- :mod:`~mathdonewrong.common`: Some common operator definitions which can be
+  used for various different types of algebraic structures.
+- :mod:`~mathdonewrong.equality`: Operations for manipulating equations and
+  equality proofs.
+- :mod:`~mathdonewrong.boolean_algebra`: Boolean algebras, including an
+  implementation of the standard Boolean algebra.
+- :mod:`~mathdonewrong.categories` and
+  :mod:`~mathdonewrong.monoidal_categories`: An early-feeling attempt at
+  defining categories.
+- :mod:`~mathdonewrong.lambda_calc`: Lambda calculus.
+- :mod:`~mathdonewrong.primitive_recursive`: Primitive recursive functions, and
+  the theory of primitive recursive arithmetic.
+- :mod:`~mathdonewrong.varieties`: Varieties of algebras—a particular formal
+  definition of what a "type of algebraic structure" is.
+- :mod:`~mathdonewrong.python_exprs`: Python expressions, represented as
+  :class:`~mathdonewrong.expressions.Expression` objects.
+- :mod:`~mathdonewrong.pyfunctors`: Functors and monads internal to Python. (The
+  idea behind these is the same as the ``Functor`` and ``Monad`` typeclasses in
+  Haskell.)
+- :mod:`~mathdonewrong.code_to_boolexpr`,
+  :mod:`~mathdonewrong.code_to_expression`,
+  :mod:`~mathdonewrong.code_to_monoidal`: Various early attempts at
+  automatically converting Python code into various kinds of expressions.
+
+Fundamental classes
+-------------------
 
 The two fundamental classes are :class:`~mathdonewrong.expressions.Expression`
 and :class:`~mathdonewrong.algebras.Algebra`.
@@ -33,23 +84,11 @@ describes the concept of a monoid (but doesn't provide any implementations), and
 which actually represent particular monoids, and provide the appropriate
 implementations.
 
-There are a few modules which attempt to implement various particular kinds of
-mathematical structures. In no particular order, some of these are:
+Miscellaneous
+-------------
 
-- The :mod:`~mathdonewrong.monoids` module describes monoids and implements a
-  few examples. It also contains an initial attempt at defining what a
-  homomorphism is.
-- The :mod:`~mathdonewrong.boolean_algebra` module describes Boolean algebras
-  and provides an implementation of the standard Boolean algebra.
-- The :mod:`~mathdonewrong.categories` and
-  :mod:`~mathdonewrong.monoidal_categories` modules are an early-feeling attempt
-  at defining categories.
-- The :mod:`~mathdonewrong.lambda_calc` and
-  :mod:`~mathdonewrong.primitive_recursive` modules define a couple of models of
-  computation.
-
-(sorry, I don't know how Sphinx works so this documentation looks pretty messed
-up at the moment)
+Sorry—I don't know how Sphinx works so this documentation looks pretty messed up
+at the moment.
 
 .. toctree::
    :maxdepth: 2
