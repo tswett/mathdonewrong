@@ -11,7 +11,7 @@
 import pytest
 from mathdonewrong.equality.equality_exprs import EqSymm, EqTrans
 from mathdonewrong.expressions import Expression
-from mathdonewrong.monoids.monoids import Assoc, Id, MonLiteral, MonOper, MonVar, Monoid, MonoidEqualityAlgebra, MonoidEquation, MonoidHomomorphism, int_addition, int_multiplication, int_scale, string_monoid, tuple_monoid
+from mathdonewrong.monoids.monoids import Assoc, Id, MonLiteral, MonOper, MonVar, Monoid, MonoidEqualityAlgebra, MonoidEquation, MonoidHomomorphism, int_addition, int_addition_to_bool_disjunction, int_addition_to_bool_xor, int_multiplication, int_scale, string_monoid, trivial_to, tuple_monoid
 from mathdonewrong.varieties import Operator, Relation
 
 
@@ -59,6 +59,13 @@ def test_monoid_variety_is_correct():
         Relation(a * Id(), a),
         Relation((a * b) * c, a * (b * c)),
     ]
+
+@pytest.mark.skip(reason="Not yet implemented")
+def test_homomorphism_on_generators():
+    assert int_addition_to_bool_disjunction.on_generators() == [(1, True)]
+    assert int_addition_to_bool_xor.on_generators() == [(1, True)]
+    assert trivial_to(int_addition).on_generators() == []
+    assert int_scale(3).on_generators() == [(1, 3)]
 
 
 

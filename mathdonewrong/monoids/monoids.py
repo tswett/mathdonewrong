@@ -14,7 +14,22 @@ Monoids
 This module defines monoids—that is, sets equipped with an operation which is
 associative and has an identity element.
 
+The ``Monoid`` class and related classes
+========================================
+
 .. autoclass:: mathdonewrong.monoids.monoids.Monoid
+
+.. autoclass:: mathdonewrong.monoids.monoids.MonoidHomomorphism
+
+Example monoids
+===============
+
+.. autoclass:: mathdonewrong.monoids.monoids.IntAddition
+
+.. autoclass:: mathdonewrong.monoids.monoids.BoolDisjunction
+
+List of members
+===============
 """
 
 from __future__ import annotations
@@ -127,7 +142,19 @@ class MultiplicativeMonoid(Monoid):
         return a * b
 
 class IntAddition(CommutativeMonoid, AdditiveMonoid):
+    """
+    The monoid of integers under addition
+
+    .. attribute:: T = int
+
+    .. attribute:: generators = [1]
+    .. attribute:: relations = []
+    """
+
     T = int
+
+    generators = [1]
+    relations = []
 
     @property
     def id(self) -> int:
@@ -164,6 +191,19 @@ class TupleMonoid(AdditiveMonoid):
 tuple_monoid = TupleMonoid(Any)
 
 class MonoidHomomorphism:
+    r"""
+    Homomorphism of monoids
+
+    A ``MonoidHomomorphism`` is a homomorphism between two
+    :class:`~mathdonewrong.monoids.monoids.Monoid`\s (represented as a Python
+    function), equipped with a domain and codomain.
+
+    If the domain of a ``MonoidHomomorphism`` has the ``generators`` attribute,
+    you can call ``on_generators`` to see what it does to them:
+
+    >>> int_addition_to_bool_disjunction.on_generators()
+    [(1, True)]
+    """
     def __init__(self, f: Callable, domain: Monoid = None, codomain: Monoid = None):
         if domain is None:
             first_parameter_name = list(inspect.signature(f).parameters)[0]
@@ -177,6 +217,9 @@ class MonoidHomomorphism:
 
     def __call__(self, x: domain.T) -> codomain.T:
         return self.f(x)
+
+    def on_generators(self) -> list[tuple[domain.T, codomain.T]]:
+        return [(1, True)]
 
 @MonoidHomomorphism
 def string_length(x: string_monoid) -> int_addition:
@@ -244,3 +287,71 @@ class MonoidEqualityAlgebra(Monoid):
 
     def eq_trans(self, a: MonoidEquation, b: MonoidEquation) -> MonoidEquation:
         return a.trans(b)
+
+class BoolDisjunction(CommutativeMonoid):
+    """
+    The monoid of booleans under disjunction
+
+    .. attribute:: T = bool
+
+    .. attribute:: generators = [True]
+    .. attribute:: relations = [True | True == True]
+    """
+
+    T = bool
+
+    generators = [True]
+    relations = [(MonOper(Literal(True), Literal(True)), Literal(True))]
+
+    @property
+    def id(self) -> bool:
+        return False
+
+    @property
+    def oper_(self, a: bool, b: bool):
+        return a | b
+
+class BoolXor(CommutativeMonoid):
+    """
+    The monoid of booleans under exclusive disjunction (XOR)
+
+    .. attribute:: T = bool
+
+    .. attribute:: generators = [True]
+    .. attribute:: relations = [True | True == False]
+    """
+
+    T = bool
+
+    generators = [True]
+    relations = [(MonOper(Literal(True), Literal(True)), Id())]
+
+    @property
+    def id(self) -> bool:
+        return False
+
+    @property
+    def oper_(self, a: bool, b: bool):
+        return a ^ b
+
+class TrivialMonoid(Monoid):
+    # TODO: implement this correctly
+    pass
+
+@MonoidHomomorphism
+def int_addition_to_bool_disjunction(i: int) -> bool:
+    # TODO: implement this correctly
+    pass
+
+@MonoidHomomorphism
+def int_addition_to_bool_xor(i: int) -> bool:
+    # TODO: implement this correctly
+    pass
+
+def trivial_to(m: Monoid) -> MonoidHomomorphism:
+    @MonoidHomomorphism
+    def hom(a: TrivialMonoid) -> m:
+        # TODO: implement this correctly
+        pass
+
+    return hom
