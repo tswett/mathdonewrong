@@ -69,10 +69,10 @@ class Monoid(Algebra):
     right? How does that work? It seems like one of the directives here should
     work but none of them seem to be doing anything.
 
-    .. autofunction::mathdonewrong.monoids.monoids.Monoid.id_
-    .. autofunction::mathdonewrong.monoids.monoids.Monoid.oper_
-    .. autofunction::Monoid.id_
-    .. autofunction::id_
+    .. automethod::mathdonewrong.monoids.monoids.Monoid.id_
+    .. automethod::mathdonewrong.monoids.monoids.Monoid.oper_
+    .. automethod::Monoid.id_
+    .. automethod::id_
 
     Since that doesn't seem to be working, here's some information about the
     most important members of this class:
@@ -81,11 +81,11 @@ class Monoid(Algebra):
 
        The underlying set or type of this monoid.
 
-    .. function:: id_(self) -> T
+    .. method:: id_(self) -> T
 
        Get the identity element of this monoid.
 
-    .. function:: oper_(self, a: T, b: T) -> T:
+    .. method:: oper_(self, a: T, b: T) -> T:
 
        Perform the monoid operation on two elements of this monoid.
     """
@@ -145,6 +145,9 @@ class IntAddition(CommutativeMonoid, AdditiveMonoid):
     """
     The monoid of integers under addition
 
+    TODO: As described, this is actually the monoid of natural numbers under
+    addition. Oops! We need to fix that.
+
     .. attribute:: T = int
 
     .. attribute:: generators = [1]
@@ -156,8 +159,7 @@ class IntAddition(CommutativeMonoid, AdditiveMonoid):
     generators = [1]
     relations = []
 
-    @property
-    def id(self) -> int:
+    def id_(self) -> int:
         return 0
 
 int_addition = IntAddition()
@@ -174,8 +176,7 @@ int_multiplication = IntMultiplication()
 class StringMonoid(AdditiveMonoid):
     T = str
 
-    @property
-    def id(self) -> str:
+    def id_(self) -> str:
         return ''
 
 string_monoid = StringMonoid()
@@ -219,7 +220,13 @@ class MonoidHomomorphism:
         return self.f(x)
 
     def on_generators(self) -> list[tuple[domain.T, codomain.T]]:
-        return [(1, True)]
+        return [(x, self(x)) for x in self.domain.generators]
+
+def mk_monoid_homomorphism(domain: Monoid = None, codomain: Monoid = None):
+    def decorator(f: Callable[[domain.T], codomain.T]) -> MonoidHomomorphism[domain, codomain]:
+        return MonoidHomomorphism(f, domain, codomain)
+    
+    return decorator
 
 @MonoidHomomorphism
 def string_length(x: string_monoid) -> int_addition:
@@ -303,13 +310,13 @@ class BoolDisjunction(CommutativeMonoid):
     generators = [True]
     relations = [(MonOper(Literal(True), Literal(True)), Literal(True))]
 
-    @property
-    def id(self) -> bool:
+    def id_(self) -> bool:
         return False
 
-    @property
     def oper_(self, a: bool, b: bool):
         return a | b
+
+bool_disjunction = BoolDisjunction()
 
 class BoolXor(CommutativeMonoid):
     """
@@ -326,32 +333,41 @@ class BoolXor(CommutativeMonoid):
     generators = [True]
     relations = [(MonOper(Literal(True), Literal(True)), Id())]
 
-    @property
-    def id(self) -> bool:
+    def id_(self) -> bool:
         return False
 
-    @property
     def oper_(self, a: bool, b: bool):
         return a ^ b
 
+bool_xor = BoolXor()
+
 class TrivialMonoid(Monoid):
-    # TODO: implement this correctly
-    pass
+    T = None
+
+    generators = []
+
+    def id_(self) -> None:
+        return None
+
+    def oper_(self, x: None, y: None) -> None:
+        return None
+
+trivial_monoid = TrivialMonoid()
 
 @MonoidHomomorphism
-def int_addition_to_bool_disjunction(i: int) -> bool:
-    # TODO: implement this correctly
-    pass
+def int_addition_to_bool_disjunction(i: int_addition) -> bool_disjunction:
+    # TODO: change this from int_addition to nat_addition, because this doesn't
+    # work on negative integers!
+    return i != 0
 
 @MonoidHomomorphism
-def int_addition_to_bool_xor(i: int) -> bool:
-    # TODO: implement this correctly
-    pass
+def int_addition_to_bool_xor(i: int_addition) -> bool_xor:
+    return i % 2 == 1
 
 def trivial_to(m: Monoid) -> MonoidHomomorphism:
-    @MonoidHomomorphism
+    # TODO: this should be trivial_monoid, not TrivialMonoid
+    @mk_monoid_homomorphism(TrivialMonoid, m)
     def hom(a: TrivialMonoid) -> m:
-        # TODO: implement this correctly
-        pass
+        return m.id_()
 
     return hom

@@ -11,7 +11,14 @@
 import pytest
 from mathdonewrong.equality.equality_exprs import EqSymm, EqTrans
 from mathdonewrong.expressions import Expression
-from mathdonewrong.monoids.monoids import Assoc, Id, MonLiteral, MonOper, MonVar, Monoid, MonoidEqualityAlgebra, MonoidEquation, MonoidHomomorphism, int_addition, int_addition_to_bool_disjunction, int_addition_to_bool_xor, int_multiplication, int_scale, string_monoid, trivial_to, tuple_monoid
+from mathdonewrong.monoids.monoids import (
+    Assoc, Id, MonLiteral, MonOper, MonVar, Monoid, MonoidEqualityAlgebra,
+    MonoidEquation, MonoidHomomorphism,
+    bool_disjunction, bool_xor, int_addition,
+    int_addition_to_bool_disjunction, int_addition_to_bool_xor,
+    int_multiplication, int_scale, string_monoid,
+    trivial_monoid, trivial_to, tuple_monoid
+)
 from mathdonewrong.varieties import Operator, Relation
 
 
@@ -44,6 +51,10 @@ def test_int_scale_homomorphism():
         for y in [1, 5, 0, -1]:
             assert hom(y) == x * y
 
+def test_trivial_to_homomorphism():
+    assert trivial_to(int_addition)(None) == 0
+    assert trivial_to(string_monoid)(None) == ''
+
 def test_monoid_variety_is_correct():
     a, b, c = MonVar('a'), MonVar('b'), MonVar('c')
 
@@ -60,7 +71,6 @@ def test_monoid_variety_is_correct():
         Relation((a * b) * c, a * (b * c)),
     ]
 
-@pytest.mark.skip(reason="Not yet implemented")
 def test_homomorphism_on_generators():
     assert int_addition_to_bool_disjunction.on_generators() == [(1, True)]
     assert int_addition_to_bool_xor.on_generators() == [(1, True)]
@@ -70,6 +80,8 @@ def test_homomorphism_on_generators():
 
 
 # Test various particular monoids
+
+L = MonLiteral
 
 def test_int_addition():
     assert int_addition.oper() == 0
@@ -95,11 +107,41 @@ def test_tuple_monoid():
     assert tuple_monoid.oper((1, 'hello'), (), ('world',)) == (1, 'hello', 'world')
 
 def test_evaluation():
-    L = MonLiteral
     assert (L(5) * L(7) * L(3)).evaluate_in(int_addition, {}) == 15
     assert (L(5) * L(7) * L(3)).evaluate_in(int_multiplication, {}) == 105
     assert (L('boots') * L(' and') * L(' cats')).evaluate_in(string_monoid, {}) == 'boots and cats'
     assert (L((1, 'hello')) * L(()) * L(('world',))).evaluate_in(tuple_monoid, {}) == (1, 'hello', 'world')
+
+def test_trivial_monoid():
+    assert Id().evaluate_in(trivial_monoid) == None
+    assert (Id() * Id()).evaluate_in(trivial_monoid) == None
+
+def test_bool_disjunction():
+    assert Id().evaluate_in(bool_disjunction) == False
+    assert (Id() * Id()).evaluate_in(bool_disjunction) == False
+    assert (Id() * L(True)).evaluate_in(bool_disjunction) == True
+    assert (L(True) * Id()).evaluate_in(bool_disjunction) == True
+    assert (L(True) * L(True)).evaluate_in(bool_disjunction) == True
+
+def test_bool_xor():
+    assert Id().evaluate_in(bool_xor) == False
+    assert (Id() * Id()).evaluate_in(bool_xor) == False
+    assert (Id() * L(True)).evaluate_in(bool_xor) == True
+    assert (L(True) * Id()).evaluate_in(bool_xor) == True
+    assert (L(True) * L(True)).evaluate_in(bool_xor) == False
+
+def test_int_addition_to_bool_disjunction():
+    h = int_addition_to_bool_disjunction
+    assert h(0) == False
+    assert h(1) == True
+    assert h(2) == True
+
+def test_int_addition_to_bool_xor():
+    h = int_addition_to_bool_xor
+    assert h(0) == False
+    assert h(1) == True
+    assert h(2) == False
+    assert h(3) == True
 
 
 
