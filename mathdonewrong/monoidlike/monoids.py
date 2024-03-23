@@ -18,6 +18,7 @@ The ``Monoid`` class and related classes
 ========================================
 
 .. autoclass:: mathdonewrong.monoidlike.monoids.Monoid
+   :members:
 
 .. autoclass:: mathdonewrong.monoidlike.monoids.MonoidHomomorphism
 
@@ -32,8 +33,11 @@ Monoid equality
 ===============
 
 .. autoclass:: MonoidEquation
+   :members:
+   :special-members: __mul__
 
 .. autoclass:: MonoidEqualityAlgebra
+   :members:
 
 List of members
 ===============
@@ -71,33 +75,10 @@ class Assoc(MonoidExpr, NamedOper):
 class Monoid(Algebra):
     """
     Set with associative operator with identity
-
-    I should be able to use ``autofunction`` to document some of these methods,
-    right? How does that work? It seems like one of the directives here should
-    work but none of them seem to be doing anything.
-
-    .. automethod::mathdonewrong.monoidlike.monoids.Monoid.id_
-    .. automethod::mathdonewrong.monoidlike.monoids.Monoid.oper_
-    .. automethod::Monoid.id_
-    .. automethod::id_
-
-    Since that doesn't seem to be working, here's some information about the
-    most important members of this class:
-
-    .. attribute:: T: type
-
-       The underlying set or type of this monoid.
-
-    .. method:: id_(self) -> T
-
-       Get the identity element of this monoid.
-
-    .. method:: oper_(self, a: T, b: T) -> T:
-
-       Perform the monoid operation on two elements of this monoid.
     """
 
     T: type
+    """The underlying set or type of this monoid"""
 
     @property
     def id(self) -> T:
@@ -105,12 +86,12 @@ class Monoid(Algebra):
 
     @operator('Id')
     def id_(self) -> T:
-        """here's a docstring"""
+        """Get the identity element of this monoid"""
         raise NotImplementedError
 
     @operator('Mop')
     def mop_(self, a: T, b: T) -> T:
-        """here's another docstring"""
+        """Perform the monoid operation on two elements of this monoid"""
         raise NotImplementedError
 
     def mop(self, *args: T) -> T:
@@ -133,7 +114,7 @@ class Monoid(Algebra):
     @relation()
     def assoc(self, a: T, b: T, c: T):
         return self.mop_(self.mop_(a, b), c)
-    
+
     def assoc_rhs(self, a: T, b: T, c: T):
         return self.mop_(a, self.mop_(b, c))
 
@@ -232,7 +213,7 @@ class MonoidHomomorphism:
 def mk_monoid_homomorphism(domain: Monoid = None, codomain: Monoid = None):
     def decorator(f: Callable[[domain.T], codomain.T]) -> MonoidHomomorphism[domain, codomain]:
         return MonoidHomomorphism(f, domain, codomain)
-    
+
     return decorator
 
 @MonoidHomomorphism
@@ -253,21 +234,57 @@ def int_scale(x: int) -> MonoidHomomorphism:
 
 @dataclass
 class MonoidEquation:
+    r"""
+    Equation of monoid expressions
+
+    A ``MonoidEquation`` consists of two :class:`MonoidExpr`\s along with a
+    boolean stating whether or not the equation is considered to be valid.
+
+    It is, of course, possible to create a ``MonoidEquation`` with arbitrary
+    ``lhs``, ``rhs``, and ``valid`` flag. However, the methods provide the
+    "official" ways to create a ``MonoidEquation``; any equation created using
+    these methods will be ``valid`` only if it is correct according to the
+    axioms of a monoid.
+
+    With the exception of :meth:`trans`, the equation produced by each of these
+    methods is have their ``valid`` flag set to ``True`` if and only if all of
+    the input equations have their ``valid`` flags set to ``True``. (For those
+    methods that take no equations as inputs, ``valid`` is always ``True``.)
+
+    TODO: Add ``left_id`` and ``right_id`` methods.
+    """
     lhs: MonoidExpr
     rhs: MonoidExpr
     valid: bool
 
     @staticmethod
     def id() -> MonoidEquation:
+        r"""
+        The identity element
+
+        Create the equation :math:`e = e`, where :math:`e` is the identity element.
+        """
         return MonoidEquation.refl(Id())
 
     def __mul__(self, other: MonoidEquation) -> MonoidEquation:
+        r"""
+        Multiplication of equations
+
+        Given the equations :math:`A = B` and :math:`C = D`, create the equation
+        :math:`A C = B D`.
+        """
         return MonoidEquation(
             self.lhs * other.lhs,
             self.rhs * other.rhs,
             self.valid and other.valid)
 
     def assoc(self, b: MonoidEquation, c: MonoidEquation) -> MonoidEquation:
+        r"""
+        Associativity
+
+        Given the equations :math:`A_1 = A_2`, :math:`B_1 = B_2`, and :math:`C_1
+        = C_2`, create the equation :math:`(A_1 B_1) C_1 = A_2 (B_2 C_2)`.
+        """
         return MonoidEquation(
             ((self * b) * c).lhs,
             (self * (b * c)).rhs,
@@ -275,16 +292,58 @@ class MonoidEquation:
 
     @staticmethod
     def refl(a: MonoidExpr) -> MonoidEquation:
+        r"""
+        Reflexivity
+
+        Given any expression :math:`A`, create the equation :math:`A = A`.
+        """
         return MonoidEquation(a, a, valid=True)
 
     def symm(self) -> MonoidEquation:
+        r"""
+        Symmetry
+
+        Given any equation :math:`A = B`, create the equation :math:`B = A`.
+        """
         return MonoidEquation(self.rhs, self.lhs, self.valid)
 
     def trans(self, other: MonoidEquation) -> MonoidEquation:
+        r"""
+        Transitivity
+
+        Given equations :math:`A = B` and :math:`C = D`, create the equation
+        :math:`A = D`. The resulting equation is ``valid`` if and only if both
+        input equations are ``valid`` *and* the expression :math:`B` is exactly
+        the same expression as the expression :math:`C`.
+        """
         valid = self.valid and other.valid and self.rhs == other.lhs
         return MonoidEquation(self.lhs, other.rhs, valid)
 
 class MonoidEqualityAlgebra(Monoid):
+    r"""The "monoid equality algebra"
+
+    Any instance of ``MonoidEqualityAlgebra`` is the "monoid" whose elements are
+    equations of monoid expressions.
+
+    This is a "fake monoid." In other words, this class is a subclass of
+    :class:`Monoid`, and it implements all of the members of ``Monoid``
+    (including ``assoc``, which is supposed to be the associativity law), but
+    instances of this class are not actually monoids, because they don't satisfy
+    any of the monoid laws. For example, given an equation :math:`A = B`,
+    multiplying by ``id`` on the left will produce the equation :math:`e A = e
+    B` instead of giving back :math:`A = B`.
+
+    (actually, it doesn't implement ``left_id`` and ``right_id`` yet, but those
+    will be pretty easy to add)
+
+    I think that this "monoid" is actually a monoidal category. Objects are
+    monoid expressions (:class:`MonoidExpr`\s), and morphisms are assertions
+    that one expression (the domain or LHS) is equivalent to another expression
+    (the codomain or RHS). The :meth:`id_` method produces (the identity
+    morphism for) the monoidal unit; the :meth:`mop_` method is the monoidal
+    product; the :meth:`assoc` method is a version of the associator; and the
+    :meth:`left_id` and :meth:`right_id` methods are the left and right unitors.
+    """
     T = MonoidEquation
 
     def id_(self) -> MonoidEquation:

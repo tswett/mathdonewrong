@@ -34,7 +34,7 @@ class Relation:
 
 @dataclass
 class Variety:
-    """
+    r"""
     Variety of algebras
 
     A ``Variety`` is a formal description of some kind of algebraic structure.
