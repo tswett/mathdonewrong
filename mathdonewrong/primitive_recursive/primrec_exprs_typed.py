@@ -8,6 +8,43 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
+"""
+Typed primitive recursive functions
+
+This is a definition of primitive recursive functions that is, in my opinion, a
+bit more elegant than the one in
+:mod:`~mathdonewrong.primitive_recursive.primrec_exprs`. The main difference is
+that here, there are two families of types (natural numbers, and tuples), and
+every function takes exactly one parameter.
+
+I made a misstep in my initial implementation of the type system: I tried to use
+Python's native type hints to represent the types of the functions. However,
+Python's native type hints are pretty difficult to deal with; it would be better
+to define a new system of my own.
+
+Expression classes
+------------------
+
+.. autoclass:: PrimRecExpr
+.. autoclass:: Succ
+.. autoclass:: Zero
+.. autoclass:: Fork
+.. autoclass:: Select
+.. autoclass:: Id
+.. autoclass:: Comp
+.. autoclass:: Const
+.. autoclass:: NatRecurse
+
+The typechecking and evaluation algebras
+----------------------------------------
+
+.. autoclass:: TypecheckAlgebra
+.. autoclass:: ToFuncAlgebra
+
+List of members
+---------------
+"""
+
 from __future__ import annotations
 
 from typing import Callable, ParamSpec, TypeVar
@@ -26,15 +63,46 @@ class PrimRecExpr(Expression):
         return self.evaluate_in(ToFuncAlgebra())
 
 class Succ(PrimRecExpr, NamedOper):
-    pass
+    r"""
+    Successor function
+
+    The expression ``Succ()`` represents the successor function, of type
+    :math:`\mathbb{N} \to \mathbb{N}`.
+    """
 
 class Zero(PrimRecExpr, NamedOper):
-    pass
+    r"""
+    Zero
+
+    The expression ``Zero()`` represents the constantly-zero function, of type
+    :math:`\mathbf{1} \to \mathbb{N}`.
+
+    In the current implementation, evaluating ``Zero()`` produces a Python
+    function which takes no arguments. That's probably a mistake; it should take
+    one argument and ignore it.
+    """
 
 class Fork(PrimRecExpr, NamedOper):
-    pass
+    r"""
+    Pair (fork) of functions
+
+    Given a function ``f`` of type :math:`A \to B` and a function ``g`` of type
+    :math:`A \to C`, the expression ``Fork(f, g)`` represents the function of
+    type :math:`A \to B \times C` that takes an argument ``x`` and returns the
+    pair ``(f(x), g(x))``.
+    """
 
 class Select(PrimRecExpr, NamedOper):
+    r"""
+    Tuple projection (selection)
+
+    Given any two types :math:`A` and :math:`B`, the expression ``Select(0, A,
+    B)`` represents the function of type :math:`A \times B \to A` that takes a
+    pair ``(x, y)`` and returns the first component ``x``, and the expression
+    ``Select(1, A, B)`` represents the function of type :math:`A \times B \to B`
+    that takes a pair ``(x, y)`` and returns the second component ``y``.
+    """
+
     def __init__(self, index: int, first: type, second: type):
         super().__init__(Literal(index), Literal(first), Literal(second))
 
@@ -43,6 +111,12 @@ class Select(PrimRecExpr, NamedOper):
         return f'Select({index.value}, {first.value}, {second.value})'
 
 class Id(PrimRecExpr, NamedOper):
+    r"""
+    Identity function
+
+    Given any type :math:`A`, the expression ``Id(A)`` represents the identity
+    function of type :math:`A \to A`.
+    """
     def __init__(self, domain: type):
         super().__init__(Literal(domain))
 
@@ -51,9 +125,24 @@ class Id(PrimRecExpr, NamedOper):
         return f'Id({domain.value})'
 
 class Comp(PrimRecExpr, NamedOper):
-    pass
+    r"""
+    Function composition
+
+    Given a function ``f`` of type :math:`A \to B` and a function ``g`` of type
+    :math:`B \to C`, the expression ``Comp(f, g)`` represents the composition of
+    ``f`` and ``g``, of type :math:`A \to C`.
+    """
 
 class Const(PrimRecExpr, NamedOper):
+    r"""
+    Constant function
+
+    Given any two types :math:`A` and :math:`B`, and a value ``x`` of type
+    :math:`B`, the expression ``Const(A, B, x)`` represents the constant
+    function of type :math:`A \to B` that ignores its argument and returns
+    ``x``.
+    """
+
     def __init__(self, domain: type, codomain: type, value: codomain):
         super().__init__(Literal(domain), Literal(codomain), Literal(value))
 
@@ -62,7 +151,22 @@ class Const(PrimRecExpr, NamedOper):
         return f'Const({domain.value}, {codomain.value}, {value.value})'
 
 class NatRecurse(PrimRecExpr, NamedOper):
-    pass
+    r"""
+    Recursion on natural numbers
+
+    Given a base case function ``base`` of type :math:`A \to B`, and a step case
+    function ``step`` of type :math:`A \times B \to B`, the expression
+    ``NatRecurse(base, step)`` represents the function of type :math:`A \times
+    \mathbb{N} \to B` that does the following:
+
+    - Take a pair :math:`(x, n)`, where :math:`x : A` is a "common parameter"
+      and :math:`n : \mathbb{N}` is the number of times to iterate.
+    - Evaluate ``base(x)`` and store its result in an accumulator variable
+      :math:`y`.
+    - Do the following :math:`n` times: evaluate ``step(x, y)`` and store its
+      result in :math:`y`.
+    - Return the final value of :math:`y`.
+    """
 
 class TypecheckAlgebra(Algebra):
     def succ(self):

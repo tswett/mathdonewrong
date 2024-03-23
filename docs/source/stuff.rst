@@ -17,21 +17,9 @@ page I've created in the course of figuring it out.
 
 .. autosummary::
    :toctree: generated
+   :recursive:
 
-   mathdonewrong.algebras
-   mathdonewrong.boolean_algebra
-   mathdonewrong.categories
-   mathdonewrong.common
-   mathdonewrong.equality
-   mathdonewrong.expressions
-   mathdonewrong.lambda_calc
-   mathdonewrong.monoidal_categories
-   mathdonewrong.monoidlike
-   mathdonewrong.monoidlike.monoids
-   mathdonewrong.primitive_recursive
-   mathdonewrong.pyfunctors
-   mathdonewrong.python_exprs
-   mathdonewrong.varieties
+   mathdonewrong
 
 Information about some arbitrary things
 =======================================
