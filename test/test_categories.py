@@ -9,7 +9,7 @@
 # FOR A PARTICULAR PURPOSE. See version 3 of the GNU GPL for more details.
 
 from mathdonewrong.categories.examples import DictCategory, MonoidToCategory
-from mathdonewrong.monoids.monoids import int_addition, int_multiplication, string_monoid
+from mathdonewrong.monoidlike.monoids import int_addition, int_multiplication, string_monoid
 
 def test_MonoidToCategory():
     cat = MonoidToCategory(int_addition)

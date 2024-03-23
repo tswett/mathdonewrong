@@ -43,5 +43,5 @@ def test_variety_str():
                 Times(x, Times(y, z)) = Times(Times(x, y), z)''')
 
 def test_Monoid_variety():
-    from mathdonewrong.monoids.monoids import Monoid
+    from mathdonewrong.monoidlike.monoids import Monoid
     str(Monoid.variety)

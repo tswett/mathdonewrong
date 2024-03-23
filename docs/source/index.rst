@@ -36,8 +36,8 @@ The modules are, in roughly descending order of importance:
   expression trees. An ``Algebra`` is fundamentally nothing more than a
   collection of functions implementing the operations in an ``Expression``.
   These two classes are the foundation of everything else.
-- :mod:`~mathdonewrong.monoids`: The definition of a monoid (the
-  :class:`~mathdonewrong.monoids.monoids.Monoid` class), and a few examples and
+- :mod:`~mathdonewrong.monoidlike`: The definition of a monoid (the
+  :class:`~mathdonewrong.monoidlike.monoids.Monoid` class), and a few examples and
   related concepts. As of this writing, monoids are the most fleshed-out type of
   algebraic structure.
 - :mod:`~mathdonewrong.common`: Some common operator definitions which can be
@@ -77,10 +77,10 @@ their operators.
 
 There are many subclasses of ``Algebra`` corresponding to various varieties and
 instances of mathematical structures. For example,
-:class:`~mathdonewrong.monoids.monoids.Monoid` is a subclass of ``Algebra`` which
+:class:`~mathdonewrong.monoidlike.monoids.Monoid` is a subclass of ``Algebra`` which
 describes the concept of a monoid (but doesn't provide any implementations), and
-:class:`~mathdonewrong.monoids.monoids.IntAddition` and
-:class:`~mathdonewrong.monoids.monoids.IntMultiplication` are subclasses of ``Monoid``
+:class:`~mathdonewrong.monoidlike.monoids.IntAddition` and
+:class:`~mathdonewrong.monoidlike.monoids.IntMultiplication` are subclasses of ``Monoid``
 which actually represent particular monoids, and provide the appropriate
 implementations.
 

@@ -77,7 +77,7 @@ class Algebra(metaclass=AlgebraClass):
     An instance of ``Algebra`` is (at least conceptually) an algebraic structure:
     a collection of sets (usually just one) and functions operating on those
     sets, potentially satisfying some axioms. For example, a
-    :class:`~mathdonewrong.monoids.monoids.Monoid` consists of a set and two
+    :class:`~mathdonewrong.monoidlike.monoids.Monoid` consists of a set and two
     functions (implementing the monoid operators) satisfying the monoid axioms.
     """
     def operate(self, operator_name, operands):

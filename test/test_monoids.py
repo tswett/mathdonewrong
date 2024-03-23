@@ -11,7 +11,7 @@
 import pytest
 from mathdonewrong.equality.equality_exprs import EqSymm, EqTrans
 from mathdonewrong.expressions import Expression
-from mathdonewrong.monoids.monoids import (
+from mathdonewrong.monoidlike.monoids import (
     Assoc, Id, MonLiteral, MonOper, MonVar, Monoid, MonoidEqualityAlgebra,
     MonoidEquation, MonoidHomomorphism,
     bool_disjunction, bool_xor, int_addition,

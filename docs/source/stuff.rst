@@ -26,8 +26,8 @@ page I've created in the course of figuring it out.
    mathdonewrong.expressions
    mathdonewrong.lambda_calc
    mathdonewrong.monoidal_categories
-   mathdonewrong.monoids
-   mathdonewrong.monoids.monoids
+   mathdonewrong.monoidlike
+   mathdonewrong.monoidlike.monoids
    mathdonewrong.primitive_recursive
    mathdonewrong.pyfunctors
    mathdonewrong.python_exprs
@@ -36,7 +36,7 @@ page I've created in the course of figuring it out.
 Information about some arbitrary things
 =======================================
 
-.. autofunction:: mathdonewrong.monoids.monoids.int_scale
+.. autofunction:: mathdonewrong.monoidlike.monoids.int_scale
 
 .. autoclass:: mathdonewrong.algebras.Algebra
 

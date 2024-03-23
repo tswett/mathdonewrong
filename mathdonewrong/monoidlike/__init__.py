@@ -16,5 +16,5 @@ Eventually, this module will contain definitions of monoids and various kinds of
 algebras related to monoids.
 
 For now, only plain old monoids are defined. See
-:mod:`mathdonewrong.monoids.monoids`.
+:mod:`mathdonewrong.monoidlike.monoids`.
 """

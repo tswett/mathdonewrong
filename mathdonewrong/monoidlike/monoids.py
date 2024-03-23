@@ -17,16 +17,16 @@ associative and has an identity element.
 The ``Monoid`` class and related classes
 ========================================
 
-.. autoclass:: mathdonewrong.monoids.monoids.Monoid
+.. autoclass:: mathdonewrong.monoidlike.monoids.Monoid
 
-.. autoclass:: mathdonewrong.monoids.monoids.MonoidHomomorphism
+.. autoclass:: mathdonewrong.monoidlike.monoids.MonoidHomomorphism
 
 Example monoids
 ===============
 
-.. autoclass:: mathdonewrong.monoids.monoids.IntAddition
+.. autoclass:: mathdonewrong.monoidlike.monoids.IntAddition
 
-.. autoclass:: mathdonewrong.monoids.monoids.BoolDisjunction
+.. autoclass:: mathdonewrong.monoidlike.monoids.BoolDisjunction
 
 List of members
 ===============
@@ -69,8 +69,8 @@ class Monoid(Algebra):
     right? How does that work? It seems like one of the directives here should
     work but none of them seem to be doing anything.
 
-    .. automethod::mathdonewrong.monoids.monoids.Monoid.id_
-    .. automethod::mathdonewrong.monoids.monoids.Monoid.oper_
+    .. automethod::mathdonewrong.monoidlike.monoids.Monoid.id_
+    .. automethod::mathdonewrong.monoidlike.monoids.Monoid.oper_
     .. automethod::Monoid.id_
     .. automethod::id_
 
@@ -196,7 +196,7 @@ class MonoidHomomorphism:
     Homomorphism of monoids
 
     A ``MonoidHomomorphism`` is a homomorphism between two
-    :class:`~mathdonewrong.monoids.monoids.Monoid`\s (represented as a Python
+    :class:`~mathdonewrong.monoidlike.monoids.Monoid`\s (represented as a Python
     function), equipped with a domain and codomain.
 
     If the domain of a ``MonoidHomomorphism`` has the ``generators`` attribute,

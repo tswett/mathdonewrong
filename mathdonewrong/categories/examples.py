@@ -12,7 +12,7 @@ from __future__ import annotations
 from typing import Any, TypeVar
 
 from mathdonewrong.categories.categories import Category
-from mathdonewrong.monoids.monoids import Monoid
+from mathdonewrong.monoidlike.monoids import Monoid
 
 A, B, C = TypeVar('A'), TypeVar('B'), TypeVar('C')
 
