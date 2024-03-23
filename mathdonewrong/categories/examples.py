@@ -24,7 +24,7 @@ class MonoidToCategory(Category):
         return self.monoid.id
 
     def compose(self, f: self.monoid.T, g: self.monoid.T) -> self.monoid.T:
-        return self.monoid.oper(f, g)
+        return self.monoid.mop(f, g)
 
 class DictCategory(Category):
     def id(self, domain: list) -> dict:

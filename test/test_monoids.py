@@ -12,7 +12,7 @@ import pytest
 from mathdonewrong.equality.equality_exprs import EqSymm, EqTrans
 from mathdonewrong.expressions import Expression
 from mathdonewrong.monoidlike.monoids import (
-    Assoc, Id, MonLiteral, MonOper, MonVar, Monoid, MonoidEqualityAlgebra,
+    Assoc, Id, MonLiteral, Mop, MonVar, Monoid, MonoidEqualityAlgebra,
     MonoidEquation, MonoidHomomorphism,
     bool_disjunction, bool_xor, int_addition,
     int_addition_to_bool_disjunction, int_addition_to_bool_xor,
@@ -27,9 +27,9 @@ from mathdonewrong.varieties import Operator, Relation
 
 def test_MonOper_requires_two_operands():
     with pytest.raises(TypeError):
-        MonOper(1)
+        Mop(1)
     with pytest.raises(TypeError):
-        MonOper(1, 2, 3)
+        Mop(1, 2, 3)
 
 def test_a_homomorphism():
     @MonoidHomomorphism
@@ -62,7 +62,7 @@ def test_monoid_variety_is_correct():
 
     assert vty.operators == [
         Operator('Id'),
-        Operator('MonOper'),
+        Operator('Mop'),
     ]
 
     assert vty.relations == [
@@ -84,27 +84,27 @@ def test_homomorphism_on_generators():
 L = MonLiteral
 
 def test_int_addition():
-    assert int_addition.oper() == 0
-    assert int_addition.oper(5) == 5
-    assert int_addition.oper(5, 7) == 12
-    assert int_addition.oper(5, 7, 3) == 15
+    assert int_addition.mop() == 0
+    assert int_addition.mop(5) == 5
+    assert int_addition.mop(5, 7) == 12
+    assert int_addition.mop(5, 7, 3) == 15
 
 def test_int_multiplication():
-    assert int_multiplication.oper() == 1
-    assert int_multiplication.oper(5) == 5
-    assert int_multiplication.oper(5, 7) == 35
-    assert int_multiplication.oper(5, 7, 3) == 105
+    assert int_multiplication.mop() == 1
+    assert int_multiplication.mop(5) == 5
+    assert int_multiplication.mop(5, 7) == 35
+    assert int_multiplication.mop(5, 7, 3) == 105
 
 def test_string_monoid():
-    assert string_monoid.oper() == ''
-    assert string_monoid.oper('boots') == 'boots'
-    assert string_monoid.oper('boots', ' and') == 'boots and'
-    assert string_monoid.oper('boots', ' and', ' cats') == 'boots and cats'
+    assert string_monoid.mop() == ''
+    assert string_monoid.mop('boots') == 'boots'
+    assert string_monoid.mop('boots', ' and') == 'boots and'
+    assert string_monoid.mop('boots', ' and', ' cats') == 'boots and cats'
 
 def test_tuple_monoid():
-    assert tuple_monoid.oper() == ()
-    assert tuple_monoid.oper((1, 'hello')) == (1, 'hello')
-    assert tuple_monoid.oper((1, 'hello'), (), ('world',)) == (1, 'hello', 'world')
+    assert tuple_monoid.mop() == ()
+    assert tuple_monoid.mop((1, 'hello')) == (1, 'hello')
+    assert tuple_monoid.mop((1, 'hello'), (), ('world',)) == (1, 'hello', 'world')
 
 def test_evaluation():
     assert (L(5) * L(7) * L(3)).evaluate_in(int_addition, {}) == 15

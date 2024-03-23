@@ -28,6 +28,13 @@ Example monoids
 
 .. autoclass:: mathdonewrong.monoidlike.monoids.BoolDisjunction
 
+Monoid equality
+===============
+
+.. autoclass:: MonoidEquation
+
+.. autoclass:: MonoidEqualityAlgebra
+
 List of members
 ===============
 """
@@ -43,7 +50,7 @@ from mathdonewrong.expressions import Expression, Literal, NamedOper, Var
 
 class MonoidExpr(Expression):
     def __mul__(self, other: MonoidExpr) -> MonoidExpr:
-        return MonOper(self, other)
+        return Mop(self, other)
 
 class MonLiteral(MonoidExpr, Literal):
     pass
@@ -54,7 +61,7 @@ class MonVar(MonoidExpr, Var):
 class Id(MonoidExpr, NamedOper):
     pass
 
-class MonOper(MonoidExpr, NamedOper):
+class Mop(MonoidExpr, NamedOper):
     def __init__(self, left: MonoidExpr, right: MonoidExpr):
         super().__init__(left, right)
 
@@ -101,44 +108,44 @@ class Monoid(Algebra):
         """here's a docstring"""
         raise NotImplementedError
 
-    @operator('MonOper')
-    def oper_(self, a: T, b: T) -> T:
+    @operator('Mop')
+    def mop_(self, a: T, b: T) -> T:
         """here's another docstring"""
         raise NotImplementedError
 
-    def oper(self, *args: T) -> T:
-        return reduce(self.oper_, args, self.id)
+    def mop(self, *args: T) -> T:
+        return reduce(self.mop_, args, self.id)
 
     @relation()
     def left_id(self, a: T):
-        return self.oper_(self.id_(), a)
+        return self.mop_(self.id_(), a)
 
     def left_id_rhs(self, a: T):
         return a
 
     @relation()
     def right_id(self, a: T):
-        return self.oper_(a, self.id_())
+        return self.mop_(a, self.id_())
 
     def right_id_rhs(self, a: T):
         return a
 
     @relation()
     def assoc(self, a: T, b: T, c: T):
-        return self.oper_(self.oper_(a, b), c)
+        return self.mop_(self.mop_(a, b), c)
     
     def assoc_rhs(self, a: T, b: T, c: T):
-        return self.oper_(a, self.oper_(b, c))
+        return self.mop_(a, self.mop_(b, c))
 
 class CommutativeMonoid(Monoid):
     pass
 
 class AdditiveMonoid(Monoid):
-    def oper_(self, a: T, b: T) -> T:
+    def mop_(self, a: T, b: T) -> T:
         return a + b
 
 class MultiplicativeMonoid(Monoid):
-    def oper_(self, a: T, b: T) -> T:
+    def mop_(self, a: T, b: T) -> T:
         return a * b
 
 class IntAddition(CommutativeMonoid, AdditiveMonoid):
@@ -283,7 +290,7 @@ class MonoidEqualityAlgebra(Monoid):
     def id_(self) -> MonoidEquation:
         return MonoidEquation.id()
 
-    def oper_(self, a: MonoidEquation, b: MonoidEquation) -> MonoidEquation:
+    def mop_(self, a: MonoidEquation, b: MonoidEquation) -> MonoidEquation:
         return a * b
 
     def assoc(self, a: MonoidEquation, b: MonoidEquation, c: MonoidEquation) -> MonoidEquation:
@@ -308,12 +315,12 @@ class BoolDisjunction(CommutativeMonoid):
     T = bool
 
     generators = [True]
-    relations = [(MonOper(Literal(True), Literal(True)), Literal(True))]
+    relations = [(Mop(Literal(True), Literal(True)), Literal(True))]
 
     def id_(self) -> bool:
         return False
 
-    def oper_(self, a: bool, b: bool):
+    def mop_(self, a: bool, b: bool):
         return a | b
 
 bool_disjunction = BoolDisjunction()
@@ -331,12 +338,12 @@ class BoolXor(CommutativeMonoid):
     T = bool
 
     generators = [True]
-    relations = [(MonOper(Literal(True), Literal(True)), Id())]
+    relations = [(Mop(Literal(True), Literal(True)), Id())]
 
     def id_(self) -> bool:
         return False
 
-    def oper_(self, a: bool, b: bool):
+    def mop_(self, a: bool, b: bool):
         return a ^ b
 
 bool_xor = BoolXor()
@@ -349,7 +356,7 @@ class TrivialMonoid(Monoid):
     def id_(self) -> None:
         return None
 
-    def oper_(self, x: None, y: None) -> None:
+    def mop_(self, x: None, y: None) -> None:
         return None
 
 trivial_monoid = TrivialMonoid()
