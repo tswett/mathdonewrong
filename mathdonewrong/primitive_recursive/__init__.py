@@ -10,10 +10,11 @@
 
 """
 Primitive recursive arithmetic
+==============================
 
 This module contains a couple of definitions of primitive recursive functions.
 
-The :mod:`~mathdonewrong.primitive_recursive.primrec_exprs` module is the older
+The :mod:`~mathdonewrong.primitive_recursive.primrec_exprs` module is the oldest
 one, and it will probably be deleted relatively soon.
 
 I'm hoping that before long, I'll have a definition of the (logic-free) theory
@@ -22,4 +23,13 @@ some substantial theorems. (In fact, in theory, that will allow us to start
 proving *most* substantial theorems—primitive recursive arithmetic is powerful
 enough to prove nearly any "ordinary" theorem that can be written as a
 first-order statement about the integers.)
+
+This module contains:
+
+- :mod:`~mathdonewrong.primitive_recursive.primrec_exprs`: A simple definition
+  of untyped primitive recursive functions over the natural numbers.
+- :mod:`~mathdonewrong.primitive_recursive.primrec_exprs_typed`: A definition of
+  statically typed primitive recursive functions.
+- :mod:`~mathdonewrong.primitive_recursive.primrec_categorical`: The 2-category
+  of primitive recursive types, functions, and equality proofs
 """
